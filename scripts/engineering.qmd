@@ -1,0 +1,23 @@
+---
+title: Data Engineering
+author: Atticus Tarleton
+date: today
+description:  Data Cleaning and Processing for this project
+jupyter: python3
+---
+
+Below is the code block that moves the project root to the right place. Basically, it sets the root to this file, then moves back until it reaches the where the git info is stored to determine the code repository root
+
+```{python}
+import os
+from pathlib import Path
+import duckdb
+
+_project_root = Path.cwd()
+while not (_project_root / ".git").exists():
+    _project_root = _project_root.parent
+    if _project_root == _project_root.parent:
+        raise RuntimeError(".git not found — are you inside the repo?")
+os.chdir(_project_root)
+print(os.getcwd())
+```
