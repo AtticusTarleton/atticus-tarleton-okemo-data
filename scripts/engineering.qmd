@@ -75,6 +75,15 @@ raw_pandas_dataframe['region'] = ['ESC', 'P', 'M', 'WSC', 'P', 'M', 'NE', 'SA', 
     'SA', 'WNC', 'ESC', 'WSC', 'M', 'NE', 'SA', 'P', 'SA', 'ENC', 'M', 'US']
 print(raw_pandas_dataframe[['st_abbrev','region']]) #double checking to make sure the states are aligned with their region
 
-
+# making a smaller database that only contains what I am interested in
+list_of_relevant_cols = ['fips_st', 'st_abbrev', 'phys_wkforc_23', 'pa_23', 'rn_23', 'dent_23',
+    'pharm_23', 'vetin_23', 'podtrst_23', 'chiro_23', 'opto_23', 'psychol_23','conslrs_23',
+    'socwk_23', 'pt_23', 'ot_23', 'resp_ther_23', 'spech_path_23', 'massg_ther_23', 'dietn_23',
+    'medmgr_23', 'med_secrtrs_23', 'clin_lab_techs_23', 'diag_reltd_techs_23', 'emt_parmdcs_23',
+    'hlth_sup_techs_23', 'med_rec_spec_23', 'med_asst_23', 'pharm_aide_23', 'med_transcrp_23',
+    'vetin_asst_23', 'phleb_23', 'oth_hlthcar_23', 'pers_care_aide_23', 'nurse_aide_23',
+    'popn_pums_23', 'popn_ge60_23', 'popn_24']
+smaller_health_pandas_dataframe = raw_pandas_dataframe[list_of_relevant_cols]
+print(smaller_health_pandas_dataframe.head())
 ```
 
