@@ -10,4 +10,4 @@ Project Steps
 
 Data from: https://data.hrsa.gov/data/download#
 - specifically the area health resource files
-- note that the data does come with technical documentation of changes year to year, that documentation will not be included in this project but is also available to be downloaded
+- note that the technical documentation comes with the data from the HRSA page

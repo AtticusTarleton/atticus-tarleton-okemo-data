@@ -44,6 +44,37 @@ con.execute(f"""
   CREATE OR REPLACE VIEW healthcare AS
   SELECT * FROM read_csv('{path}')
 """)
-raw_sql_dataframe = con.execute("SELECT * FROM healthace").df()
+raw_sql_dataframe = con.execute("SELECT * FROM healthcare").df()
 raw_sql_dataframe.head()
 ```
+
+Next block is using pandas to describe the data.
+The region of each state is determined by the census, coming from this website: https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf
+The regions and their acronym's
+- New England: NE
+- Middle Atlantic: MA
+- East North Central: ENC
+- West North Central: WNC
+- South Atlantic: SA
+- East South Central: ESC
+- West South Central: WSC
+- Mountain: M
+- Pacific: P
+- Whole United States: US
+
+```{python}
+list_col_names = raw_pandas_dataframe.columns.tolist() #this is over 1000 columns, so it won't be printed
+
+unique_st_abbrev = raw_pandas_dataframe['st_abbrev'].unique() #all 50 states as well as the US as a whole and the District of Columbia
+print(unique_st_abbrev)
+
+# adding a region to each state
+raw_pandas_dataframe['region'] = ['ESC', 'P', 'M', 'WSC', 'P', 'M', 'NE', 'SA', 'SA', 'SA', 'SA',
+    'P', 'M', 'ENC', 'ENC', 'WNC', 'WNC', 'ESC', 'WSC', 'NE', 'SA', 'NE', 'ENC', 'WNC', 'ESC',
+    'WNC', 'M', 'WNC', 'M', 'NE', 'MA', 'M', 'MA', 'SA', 'WNC', 'ENC', 'WSC', 'P', 'MA', 'NE',
+    'SA', 'WNC', 'ESC', 'WSC', 'M', 'NE', 'SA', 'P', 'SA', 'ENC', 'M', 'US']
+print(raw_pandas_dataframe[['st_abbrev','region']]) #double checking to make sure the states are aligned with their region
+
+
+```
+
