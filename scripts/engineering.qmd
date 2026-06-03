@@ -8,12 +8,12 @@ execute:
   eval: false
 ---
 
+
 Below is the code block that moves the project root to the right place. Basically, it sets the root to this file, then moves back until it reaches the where the git info is stored to determine the code repository root
 
 ```{python}
 import os
 from pathlib import Path
-import duckdb
 
 _project_root = Path.cwd()
 while not (_project_root / ".git").exists():
@@ -24,3 +24,26 @@ os.chdir(_project_root)
 print(os.getcwd())
 ```
 
+Below is a code block that takes a csv and reads it in as a pandas dataframe. what this means is it takes the csv stored on the hard drive and turns it into a database stored on RAM that is much easier to access and manipulate
+```{python}
+import pandas as pd
+from pathlib import Path
+
+path = Path("Data/raw_data/ahrfsn2025.csv")
+
+raw_pandas_dataframe = pd.read_csv(path) #reading the data
+raw_pandas_dataframe.head() #checking to make sure the above line worked
+```
+
+The below code takes the csv, and turns the csv into a sql database in memory using duckdb. it then uses duckdb to select everything from the sql database and turn it into a pandas dataframe to display more easily
+```{python}
+import duckdb
+
+con = duckdb.connect()
+con.execute(f"""
+  CREATE OR REPLACE VIEW healthcare AS
+  SELECT * FROM read_csv('{path}')
+""")
+raw_sql_dataframe = con.execute("SELECT * FROM healthace").df()
+raw_sql_dataframe.head()
+```
