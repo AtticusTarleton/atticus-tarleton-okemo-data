@@ -6,3 +6,7 @@ Project Steps
 - Clean Raw Data
 - Perform Data Analysis
 - Communicate Data Analysis in a clean and understandable way
+
+
+Data from: https://data.hrsa.gov/data/download#
+- specifically the area health resource files
