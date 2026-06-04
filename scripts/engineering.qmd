@@ -61,7 +61,8 @@ The regions and their acronym's
 - Mountain: M
 - Pacific: P
 - Whole United States: US
-
+This block will make a list of the column names. It will also print out all the unique state abbreviations, which will total 52, one for each state, the district of columbia, and the United States of America as a whole.
+It will also add each state to its census region, with the acroynm's listed above. Finally, a new database will be created with fewer columns, keeping the ones more relevant to the analysis that will be conducted. This means keeping the overall numbers for different professions, but not specifics like the number of new graduates or the number of male or female practitioners.
 ```{python}
 list_col_names = raw_pandas_dataframe.columns.tolist() #this is over 1000 columns, so it won't be printed
 
@@ -87,8 +88,95 @@ smaller_health_pandas_dataframe = raw_pandas_dataframe[list_of_relevant_cols]
 print(smaller_health_pandas_dataframe.head())
 ```
 
-The below code chunk are some plots explore the data
-The plots
+The next block of code is doing the same thing as the above block of code, just in SQL
+The results of each sql query will be turned into a dataframe for ease of viewing in python
+Notes on differences in difficulty for certain tasks:
+- Making a new column in SQL was much more difficult
+- The lack of quotation marks in sql makes it tedious to transfer code from pandas to sql
+```{python}
+
+col_names_sql = con.execute("DESCRIBE healthcare").df()
+print(col_names_sql)
+
+unique_st_abbrev_sql = con.execute("SELECT DISTINCT st_abbrev FROM healthcare").df()
+print(unique_st_abbrev_sql)
+
+con.execute(f"""
+  CREATE OR REPLACE TABLE healthcare_table AS
+  SELECT *, '99' AS region FROM read_csv('{path}')
+""")
+con.execute("""UPDATE healthcare_table SET region = CASE fips_st
+WHEN '01' THEN 'ESC'
+WHEN '02' THEN 'P'
+WHEN '04' THEN 'M'
+WHEN '05' THEN 'WSC'
+WHEN '06' THEN 'P'
+WHEN '08' THEN 'M'
+WHEN '09' THEN 'NE'
+WHEN '10' THEN 'SA'
+WHEN '11' THEN 'SA'
+WHEN '12' THEN 'SA'
+WHEN '13' THEN 'SA'
+WHEN '15' THEN 'P'
+WHEN '16' THEN 'M'
+WHEN '17' THEN 'ENC'
+WHEN '18' THEN 'ENC'
+WHEN '19' THEN 'WNC'
+WHEN '20' THEN 'WNC'
+WHEN '21' THEN 'ESC'
+WHEN '22' THEN 'WSC'
+WHEN '23' THEN 'NE'
+WHEN '24' THEN 'SA'
+WHEN '25' THEN 'NE'
+WHEN '26' THEN 'ENC'
+WHEN '27' THEN 'WNC'
+WHEN '28' THEN 'ESC'
+WHEN '29' THEN 'WNC'
+WHEN '30' THEN 'M'
+WHEN '31' THEN 'WNC'
+WHEN '32' THEN 'M'
+WHEN '33' THEN 'NE'
+WHEN '34' THEN 'MA'
+WHEN '35' THEN 'M'
+WHEN '36' THEN 'MA'
+WHEN '37' THEN 'SA'
+WHEN '38' THEN 'WNC'
+WHEN '39' THEN 'ENC'
+WHEN '40' THEN 'WSC'
+WHEN '41' THEN 'P'
+WHEN '42' THEN 'MA'
+WHEN '44' THEN 'NE'
+WHEN '45' THEN 'SA'
+WHEN '46' THEN 'WNC'
+WHEN '47' THEN 'ESC'
+WHEN '48' THEN 'WSC'
+WHEN '49' THEN 'M'
+WHEN '50' THEN 'NE'
+WHEN '51' THEN 'SA'
+WHEN '53' THEN 'P'
+WHEN '54' THEN 'SA'
+WHEN '55' THEN 'ENC'
+WHEN '56' THEN 'M'
+WHEN '91' THEN 'US'
+END""")
+con.execute("SELECT * FROM healthcare_table").df().head() #double checking my work
+
+con.execute(f"""
+  CREATE OR REPLACE TABLE small_healthcare_table AS
+  SELECT fips_st, st_abbrev, phys_wkforc_23, pa_23, rn_23, dent_23,
+    pharm_23, vetin_23, podtrst_23, chiro_23, opto_23, psychol_23,conslrs_23,
+    socwk_23, pt_23, ot_23, resp_ther_23, spech_path_23, massg_ther_23, dietn_23,
+    medmgr_23, med_secrtrs_23, clin_lab_techs_23, diag_reltd_techs_23, emt_parmdcs_23,
+    hlth_sup_techs_23, med_rec_spec_23, med_asst_23, pharm_aide_23, med_transcrp_23,
+    vetin_asst_23, phleb_23, oth_hlthcar_23, pers_care_aide_23, nurse_aide_23,
+    popn_pums_23, popn_ge60_23, popn_24, region FROM healthcare_table
+""")
+```
+
+
+
+The below code chunk will create some plots that explore the data
+The plots are listed below in order and what they will do
 1) The first plot explores the ratio of physicians to the total population of the state
 1) The second plot explores the ratio of physicians assistants to the total population of the state
 ```{python}
@@ -105,7 +193,7 @@ plt.bar(smaller_health_pandas_dataframe['st_abbrev'], smaller_health_pandas_data
 plt.show()
 ```
 
-Now saving the data as a parquet file for easier storage and future access
+The next code chunk will save the two dataframes as a parquet file for easier storage and future access
 ```{python}
 raw_pandas_dataframe.to_parquet('../Data/clean_data/large_2024_health_data.parquet')
 smaller_health_pandas_dataframe('../Data/clean_data/small_2024_health_data.parquet')
