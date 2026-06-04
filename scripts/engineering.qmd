@@ -102,65 +102,28 @@ print(col_names_sql)
 unique_st_abbrev_sql = con.execute("SELECT DISTINCT st_abbrev FROM healthcare").df()
 print(unique_st_abbrev_sql)
 
+state_regions_alphabetical = ['ESC', 'P', 'M', 'WSC', 'P', 'M', 'NE', 'SA', 'SA', 'SA', 'SA',
+    'P', 'M', 'ENC', 'ENC', 'WNC', 'WNC', 'ESC', 'WSC', 'NE', 'SA', 'NE', 'ENC', 'WNC', 'ESC',
+    'WNC', 'M', 'WNC', 'M', 'NE', 'MA', 'M', 'MA', 'SA', 'WNC', 'ENC', 'WSC', 'P', 'MA', 'NE',
+    'SA', 'WNC', 'ESC', 'WSC', 'M', 'NE', 'SA', 'P', 'SA', 'ENC', 'M', 'US']
+fips_code = ['01',
+'02','04','05','06','08','09', '10','11', '12', '13', '15','16', '17', '18',
+             '19','20','21','22', '23', '24', '25', '26', '27','28', '29',
+             '30', '31','32', '33', '34', '35', '36', '37', '38', '39', '40',
+             '41', '42', '44', '45', '46', '47', '48', '49', '50', '51', '53',
+             '54', '55', '56', '91']
+
 con.execute(f"""
   CREATE OR REPLACE TABLE healthcare_table AS
   SELECT *, '99' AS region FROM read_csv('{path}')
 """)
-con.execute("""UPDATE healthcare_table SET region = CASE fips_st
-WHEN '01' THEN 'ESC'
-WHEN '02' THEN 'P'
-WHEN '04' THEN 'M'
-WHEN '05' THEN 'WSC'
-WHEN '06' THEN 'P'
-WHEN '08' THEN 'M'
-WHEN '09' THEN 'NE'
-WHEN '10' THEN 'SA'
-WHEN '11' THEN 'SA'
-WHEN '12' THEN 'SA'
-WHEN '13' THEN 'SA'
-WHEN '15' THEN 'P'
-WHEN '16' THEN 'M'
-WHEN '17' THEN 'ENC'
-WHEN '18' THEN 'ENC'
-WHEN '19' THEN 'WNC'
-WHEN '20' THEN 'WNC'
-WHEN '21' THEN 'ESC'
-WHEN '22' THEN 'WSC'
-WHEN '23' THEN 'NE'
-WHEN '24' THEN 'SA'
-WHEN '25' THEN 'NE'
-WHEN '26' THEN 'ENC'
-WHEN '27' THEN 'WNC'
-WHEN '28' THEN 'ESC'
-WHEN '29' THEN 'WNC'
-WHEN '30' THEN 'M'
-WHEN '31' THEN 'WNC'
-WHEN '32' THEN 'M'
-WHEN '33' THEN 'NE'
-WHEN '34' THEN 'MA'
-WHEN '35' THEN 'M'
-WHEN '36' THEN 'MA'
-WHEN '37' THEN 'SA'
-WHEN '38' THEN 'WNC'
-WHEN '39' THEN 'ENC'
-WHEN '40' THEN 'WSC'
-WHEN '41' THEN 'P'
-WHEN '42' THEN 'MA'
-WHEN '44' THEN 'NE'
-WHEN '45' THEN 'SA'
-WHEN '46' THEN 'WNC'
-WHEN '47' THEN 'ESC'
-WHEN '48' THEN 'WSC'
-WHEN '49' THEN 'M'
-WHEN '50' THEN 'NE'
-WHEN '51' THEN 'SA'
-WHEN '53' THEN 'P'
-WHEN '54' THEN 'SA'
-WHEN '55' THEN 'ENC'
-WHEN '56' THEN 'M'
-WHEN '91' THEN 'US'
-END""")
-con.execute("SELECT * FROM healthcare_table").df().head() #double checking my work
+string_to_execute = """UPDATE healthcare_table SET region = CASE fips_st"""
+for i in range(len(state_regions_alphabetical)):
+    string_to_execute = string_to_execute + f""" WHEN '{fips_code[i]}' THEN '{state_regions_alphabetical[i]}' """
+string_to_execute = string_to_execute + f"""END"""
+con.execute(string_to_execute)
+
+print(con.execute("SELECT * FROM healthcare_table").df().head()) #double checking the work
 
 con.execute(f"""
   CREATE OR REPLACE TABLE small_healthcare_table AS
