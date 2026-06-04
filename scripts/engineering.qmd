@@ -93,6 +93,7 @@ The results of each sql query will be turned into a dataframe for ease of viewin
 Notes on differences in difficulty for certain tasks:
 - Making a new column in SQL was much more difficult
 - The lack of quotation marks in sql makes it tedious to transfer code from pandas to sql
+The code chunk below also creates a new table for adding a region and having smaller number of columns. This is because a view is just a snapshot of a table, so to make changes to the dataset requires changing the base table, as the view can't have data added to it.
 ```{python}
 
 col_names_sql = con.execute("DESCRIBE healthcare").df()
@@ -195,7 +196,7 @@ plt.show()
 
 The next code chunk will save the two dataframes as a parquet file for easier storage and future access
 ```{python}
-raw_pandas_dataframe.to_parquet('../Data/clean_data/large_2024_health_data.parquet')
-smaller_health_pandas_dataframe('../Data/clean_data/small_2024_health_data.parquet')
+raw_pandas_dataframe.to_parquet('Data/clean_data/large_2024_health_data.parquet')
+smaller_health_pandas_dataframe.to_parquet('Data/clean_data/small_2024_health_data.parquet')
 ```
 

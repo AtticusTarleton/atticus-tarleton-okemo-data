@@ -1,0 +1,71 @@
+---
+title: Report
+author: Atticus Tarleton
+date: today
+description: Data Analysis and Final Report
+jupyter: python3
+execute:
+  eval: false
+---
+
+The below code sets the project root to the right location, making file paths easier to manage
+```{python}
+import os
+from pathlib import Path
+
+_project_root = Path.cwd()
+while not (_project_root / ".git").exists():
+    _project_root = _project_root.parent
+    if _project_root == _project_root.parent:
+        raise RuntimeError(".git not found — are you inside the repo?")
+os.chdir(_project_root)
+print(os.getcwd())
+```
+
+
+The below code block is going to create a database connection to the large and small clean healthcare databases made in the engineering.qmd file
+```{python}
+import duckdb
+
+con = duckdb.connect()
+```
+
+Questions to answer
+1) How does Vermont's ratios of health care professions look compared to the US as a whole
+	- graph 1: Bar plot of ratio of vermont next to US ratio
+		- will need to do some pivoting of data and such
+2)
+
+This code chunk below sets up the datasets that will be plotted
+```{python}
+import pandas as pd
+
+small_health_df = pd.read_parquet('Data/clean_data/small_2024_health_data.parquet')
+large_health_df = pd.read_parquet('Data/clean_data/large_2024_health_data.parquet')
+small_combined_health_df = small_health_df[(small_health_df['st_abbrev'] == 'VT') | (small_health_df['st_abbrev'] =='US')]
+small_combined_ratio_df = small_combined_health_df
+
+occupation_count_columns = small_health_df.columns[2:35].tolist()
+
+small_combined_ratio_df = small_combined_health_df
+for i in occupation_count_columns:
+    small_combined_ratio_df[i] = small_combined_ratio_df[i]/small_combined_ratio_df['popn_pums_23']
+
+small_combined_ratio_melted = small_combined_ratio_df.melt(id_vars='st_abbrev',
+                    value_vars=occupation_count_columns,
+                    var_name='occupation', value_name='ratio')
+```
+
+The code chunk below does the actual plotting
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+plt.figure(figsize=(18, 10))
+plt.xticks(rotation=90)
+sns.barplot(data=small_combined_ratio_melted, x='occupation', y='ratio', hue='st_abbrev')
+plt.title("Bar Plot Comparing the Ratio of Different Kinds of Health Care Professionals to the Total Population for Vermont and the United States")
+plt.show()
+
+
+```
