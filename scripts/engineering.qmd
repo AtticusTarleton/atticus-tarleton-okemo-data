@@ -82,8 +82,32 @@ list_of_relevant_cols = ['fips_st', 'st_abbrev', 'phys_wkforc_23', 'pa_23', 'rn_
     'medmgr_23', 'med_secrtrs_23', 'clin_lab_techs_23', 'diag_reltd_techs_23', 'emt_parmdcs_23',
     'hlth_sup_techs_23', 'med_rec_spec_23', 'med_asst_23', 'pharm_aide_23', 'med_transcrp_23',
     'vetin_asst_23', 'phleb_23', 'oth_hlthcar_23', 'pers_care_aide_23', 'nurse_aide_23',
-    'popn_pums_23', 'popn_ge60_23', 'popn_24']
+    'popn_pums_23', 'popn_ge60_23', 'popn_24', 'region']
 smaller_health_pandas_dataframe = raw_pandas_dataframe[list_of_relevant_cols]
 print(smaller_health_pandas_dataframe.head())
+```
+
+The below code chunk are some plots explore the data
+The plots
+1) The first plot explores the ratio of physicians to the total population of the state
+1) The second plot explores the ratio of physicians assistants to the total population of the state
+```{python}
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(12, 6))
+plt.xticks(rotation=300)
+plt.bar(smaller_health_pandas_dataframe['st_abbrev'], smaller_health_pandas_dataframe['phys_wkforc_23']/smaller_health_pandas_dataframe['popn_pums_23'], color='skyblue', width=0.2)
+plt.show()
+
+plt.figure(figsize=(12, 6))
+plt.xticks(rotation=300)
+plt.bar(smaller_health_pandas_dataframe['st_abbrev'], smaller_health_pandas_dataframe['pa_23']/smaller_health_pandas_dataframe['phys_wkforc_23'], color='red', width=0.2)
+plt.show()
+```
+
+Now saving the data as a parquet file for easier storage and future access
+```{python}
+raw_pandas_dataframe.to_parquet('../Data/clean_data/large_2024_health_data.parquet')
+smaller_health_pandas_dataframe('../Data/clean_data/small_2024_health_data.parquet')
 ```
 
