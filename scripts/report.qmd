@@ -28,35 +28,102 @@ The below code block is going to create a database connection to the large and s
 import duckdb
 
 con = duckdb.connect()
+con.execute(f"""
+  CREATE OR REPLACE TABLE small_healthcare AS
+  SELECT * FROM read_parquet('{"Data/clean_data/small_2024_health_data.parquet"}')
+""")
+con.execute(f"""
+  CREATE OR REPLACE TABLE large_healthcare AS
+  SELECT * FROM read_parquet('{"Data/clean_data/large_2024_health_data.parquet"}')
+""")
+con.execute(f"""
+  CREATE OR REPLACE TABLE small_combined_healthcare AS
+  SELECT * FROM read_parquet('{"Data/clean_data/small_2024_health_data.parquet"}')
+  WHERE st_abbrev = 'VT' OR st_abbrev = 'US'
+""")
 ```
 
 Questions to answer
 1) How does Vermont's ratios of health care professions look compared to the US as a whole
 	- graph 1: Bar plot of ratio of vermont next to US ratio
 		- will need to do some pivoting of data and such
-2)
+	- graph 2: do the same as above, but instead by summing the northeast region
+	    - how does vermont compare to the local region
+	    - questions:
+	        - include vermont or not?
+	        - take the ratios of each state and average them, or sum the states values and average them?
+2) States with the most physicians, and their total population
+    - basically, do the numbers align
+    - and do the same with the least physicians
+3) States with the greatest ratio of physicians, and with the smallest ratio
 
-This code chunk below sets up the datasets that will be plotted
+This code chunk below sets up the datasets that will be plotted and used in the future
 ```{python}
 import pandas as pd
 
 small_health_df = pd.read_parquet('Data/clean_data/small_2024_health_data.parquet')
 large_health_df = pd.read_parquet('Data/clean_data/large_2024_health_data.parquet')
-small_combined_health_df = small_health_df[(small_health_df['st_abbrev'] == 'VT') | (small_health_df['st_abbrev'] =='US')]
-small_combined_ratio_df = small_combined_health_df
 
 occupation_count_columns = small_health_df.columns[2:35].tolist()
 
-small_combined_ratio_df = small_combined_health_df
+small_ratio_df = small_health_df.copy()
 for i in occupation_count_columns:
-    small_combined_ratio_df[i] = small_combined_ratio_df[i]/small_combined_ratio_df['popn_pums_23']
+    small_ratio_df[i] = small_ratio_df[i]/small_ratio_df['popn_pums_23']
+
+small_combined_ratio_df = small_ratio_df[(small_ratio_df['st_abbrev'] == 'VT') | (small_ratio_df['st_abbrev'] =='US')]
 
 small_combined_ratio_melted = small_combined_ratio_df.melt(id_vars='st_abbrev',
                     value_vars=occupation_count_columns,
                     var_name='occupation', value_name='ratio')
 ```
 
-The code chunk below does the actual plotting
+The code chunk below answers question 2 in pandas
+```{python}
+physician_sorted_df = small_health_df.drop(51).sort_values(by='phys_wkforc_23', ascending=False)[['st_abbrev', 'phys_wkforc_23', 'popn_pums_23']]
+print("\n the 10 states with the most physicians")
+display(physician_sorted_df.head(10))
+print("\nthe 10 states with the fewest physicians")
+display(physician_sorted_df.tail(10))
+```
+The code chunk below answers question 2 in SQL
+```{python}
+print("\n the 10 states with the most physicians")
+display(con.execute("""SELECT st_abbrev, phys_wkforc_23, popn_pums_23
+    FROM small_healthcare WHERE st_abbrev != 'US'
+    ORDER BY phys_wkforc_23 DESC LIMIT 10""").df())
+
+print("\n the 10 states with the fewest physicians")
+display(con.execute("""SELECT st_abbrev, phys_wkforc_23, popn_pums_23
+    FROM small_healthcare WHERE st_abbrev != 'US'
+     ORDER BY phys_wkforc_23 LIMIT 10""").df())
+```
+
+The code chunk below answers question 3 in pandas
+```{python}
+small_ratio_df.sort_values(by='phys_wkforc_23', ascending=False)[['st_abbrev', 'phys_wkforc_23', 'popn_pums_23']]
+```
+
+The code chunk below answers question 3 in SQL
+```{python}
+con.execute("ALTER TABLE small_healthcare ADD phys_wkforc_ratio_23 FLOAT")
+con.execute("UPDATE small_healthcare SET phys_wkforc_ratio_23 = phys_wkforc_23/popn_pums_23")
+display(con.execute("SELECT st_abbrev, phys_wkforc_ratio_23, popn_pums_23 FROM small_healthcare ORDER BY phys_wkforc_ratio_23 DESC").df())
+```
+
+
+The code chunk below does the plotting for the first plot
+
+
+What this plot is supposed to show is the ratio of different workers in different health care professions in Vermont compared to the US as a whole. This will be helpful in understanding how Vermont's healthcare system compares to the US.
+
+
+For the results of this first plot, I am expecting to see that Vermont and the US have similar ratios of health care professionals to their population size.
+Some of this is because Vermont is part of the US, and so while there are substantive differences in culture across the US, I would assume that the rough amount of health care available is similar.
+Vermont also has the 19th highest median income of any state in the US ([See this article for more info](https://www.burlingtonfreepress.com/story/money/2025/10/19/vermont-19th-highest-median-household-income-of-all-states-visual-capitalist-ranking/86751681007/?gnt-cfr=1&gca-cat=p&gca-uir=true&gca-epti=z113426p001950c001950e004400v113426d--34--b--34--&gca-ft=144&gca-ds=sophi)).
+I am assuming that median income roughly correlates to the number of health care professionals, as the higher the median income the more health care professionals a population can support in general. This is does have to do with the capitalist nature of private hospitals and systemic bias present in the US healthcare system, but it is an assumption I am making.
+Putting this together, because Vermont's median income is slightly higher than the average state, I am guess that Vermont has slightly ratio of health care professionals to its total population than the US as a whole, potentially with more professionals in fields that tend to have more elderly patients as well.
+
+
 ```{python}
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -66,6 +133,8 @@ plt.xticks(rotation=90)
 sns.barplot(data=small_combined_ratio_melted, x='occupation', y='ratio', hue='st_abbrev')
 plt.title("Bar Plot Comparing the Ratio of Different Kinds of Health Care Professionals to the Total Population for Vermont and the United States")
 plt.show()
-
-
 ```
+
+Looking at the plot now, I do see what I expected to see. Vermont has more physicians than the US on average, and tends to have a slightly higher ratio of health professionals in general.
+While there are a number of professions where there is no blue bar, this is because there was no data collected for those professions, rather than there being basically no one practicing them.
+Besides the fact that the professions with no data in Vermont are generally the least numerous professions, I know that at least some of the lack of data is because it is not collected not that there is no one practicing those professions, as one bar with no data is ot_23, standing for occupational therapist and I know there are occupational therapists currently practicing in Vermont.
