@@ -5,7 +5,10 @@ date: today
 description: Data Analysis and Final Report
 jupyter: python3
 execute:
-  eval: false
+  eval: true
+format:
+  html: default
+  pdf: default
 ---
 
 The below code sets the project root to the right location, making file paths easier to manage
@@ -128,7 +131,7 @@ Putting this together, because Vermont's median income is slightly higher than t
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-plt.figure(figsize=(18, 10))
+plt.figure(figsize=(14, 8))
 plt.xticks(rotation=90)
 sns.barplot(data=small_combined_ratio_melted, x='occupation', y='ratio', hue='st_abbrev')
 plt.title("Bar Plot Comparing the Ratio of Different Kinds of Health Care Professionals to the Total Population for Vermont and the United States")

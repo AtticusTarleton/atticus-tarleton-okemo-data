@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Atticus Tarleton">
+<meta name="dcterms.date" content="2026-06-05">
+<meta name="description" content="Data Cleaning and Processing for this project">
+
+<title>Data Engineering – Data Analysis Project on Health Care Profession Counts</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../scripts/engineering.html">Scripts</a></li><li class="breadcrumb-item"><a href="../scripts/engineering.html">Data Engineering</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Data Analysis Project on Health Care Profession Counts</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Scripts</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../scripts/engineering.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Data Engineering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../scripts/report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+    
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="engineering.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../scripts/engineering.html">Scripts</a></li><li class="breadcrumb-item"><a href="../scripts/engineering.html">Data Engineering</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Data Engineering</h1>
+</div>
+
+<div>
+  <div class="description">
+    Data Cleaning and Processing for this project
+  </div>
+</div>
+
+
+<div class="quarto-title-meta column-body">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Atticus Tarleton </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 5, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Below is the code block that moves the project root to the right place. Basically, it sets the root to this file, then moves back until it reaches the where the git info is stored to determine the code repository root</p>
+<div id="6bf6dc4e" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>_project_root <span class="op">=</span> Path.cwd()</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="kw">not</span> (_project_root <span class="op">/</span> <span class="st">".git"</span>).exists():</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    _project_root <span class="op">=</span> _project_root.parent</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> _project_root <span class="op">==</span> _project_root.parent:</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">RuntimeError</span>(<span class="st">".git not found — are you inside the repo?"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>os.chdir(_project_root)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(os.getcwd())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>/Users/AGT/Desktop/ORCA/OkemoDataLearningProject</code></pre>
+</div>
+</div>
+<p>Below is a code block that takes a csv and reads it in as a pandas dataframe. what this means is it takes the csv stored on the hard drive and turns it into a database stored on RAM that is much easier to access and manipulate</p>
+<div id="7bcb4672" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> Path(<span class="st">"Data/raw_data/ahrfsn2025.csv"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>raw_pandas_dataframe <span class="op">=</span> pd.read_csv(path) <span class="co">#reading the data</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>raw_pandas_dataframe.head() <span class="co">#checking to make sure the above line worked</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="100">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">fips_st</th>
+<th data-quarto-table-cell-role="th">st_abbrev</th>
+<th data-quarto-table-cell-role="th">phys_wkforc_23</th>
+<th data-quarto-table-cell-role="th">phys_mal_23</th>
+<th data-quarto-table-cell-role="th">phys_fem_23</th>
+<th data-quarto-table-cell-role="th">phys_lt30_23</th>
+<th data-quarto-table-cell-role="th">phys_30_39_23</th>
+<th data-quarto-table-cell-role="th">phys_40_49_23</th>
+<th data-quarto-table-cell-role="th">phys_50_59_23</th>
+<th data-quarto-table-cell-role="th">phys_ge60_23</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">popn_ge60_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_wh_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_bl_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_hsp_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_asn_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_nhpi_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_aian_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_2race_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_24</th>
+<th data-quarto-table-cell-role="th">popn_ge16_24</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>1</td>
+<td>AL</td>
+<td>12442</td>
+<td>8745</td>
+<td>3697</td>
+<td>1347.0</td>
+<td>2871.0</td>
+<td>2542.0</td>
+<td>2653.0</td>
+<td>3029.0</td>
+<td>...</td>
+<td>1225230</td>
+<td>2669822</td>
+<td>1029895</td>
+<td>176495</td>
+<td>59412</td>
+<td>1750.0</td>
+<td>12413</td>
+<td>107549</td>
+<td>5157699</td>
+<td>4162396</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2</td>
+<td>AK</td>
+<td>2158</td>
+<td>1228</td>
+<td>930</td>
+<td>NaN</td>
+<td>969.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>...</td>
+<td>142460</td>
+<td>354430</td>
+<td>18632</td>
+<td>36781</td>
+<td>38395</td>
+<td>7506.0</td>
+<td>70311</td>
+<td>47302</td>
+<td>740133</td>
+<td>585178</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>4</td>
+<td>AZ</td>
+<td>18253</td>
+<td>11945</td>
+<td>6308</td>
+<td>1195.0</td>
+<td>4341.0</td>
+<td>4353.0</td>
+<td>3832.0</td>
+<td>4532.0</td>
+<td>...</td>
+<td>1801501</td>
+<td>3351969</td>
+<td>251001</td>
+<td>1641695</td>
+<td>203974</td>
+<td>9832.0</td>
+<td>188166</td>
+<td>215471</td>
+<td>7582384</td>
+<td>6196952</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>5</td>
+<td>AR</td>
+<td>6493</td>
+<td>4291</td>
+<td>2202</td>
+<td>NaN</td>
+<td>2045.0</td>
+<td>1726.0</td>
+<td>1081.0</td>
+<td>1244.0</td>
+<td>...</td>
+<td>718243</td>
+<td>1710143</td>
+<td>344512</td>
+<td>180103</td>
+<td>37972</td>
+<td>8790.0</td>
+<td>9939</td>
+<td>118564</td>
+<td>3088354</td>
+<td>2473780</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>6</td>
+<td>CA</td>
+<td>115435</td>
+<td>66542</td>
+<td>48893</td>
+<td>6227.0</td>
+<td>32051.0</td>
+<td>27622.0</td>
+<td>22741.0</td>
+<td>26794.0</td>
+<td>...</td>
+<td>8324858</td>
+<td>11770951</td>
+<td>1725177</td>
+<td>11664640</td>
+<td>4970431</td>
+<td>110764.0</td>
+<td>90089</td>
+<td>1221188</td>
+<td>39431263</td>
+<td>32075860</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 1448 columns</p>
+</div>
+</div>
+</div>
+<p>The below code takes the csv, and turns the csv into a sql database in memory using duckdb. it then uses duckdb to select everything from the sql database and turn it into a pandas dataframe to display more easily</p>
+<div id="3474be73" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> duckdb.<span class="ex">connect</span>()</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="ss">f"""</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ss">  CREATE OR REPLACE VIEW healthcare AS</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ss">  SELECT * FROM read_csv('</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">')</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ss">"""</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>raw_sql_dataframe <span class="op">=</span> con.execute(<span class="st">"SELECT * FROM healthcare"</span>).df()</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>raw_sql_dataframe.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="101">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">fips_st</th>
+<th data-quarto-table-cell-role="th">st_abbrev</th>
+<th data-quarto-table-cell-role="th">phys_wkforc_23</th>
+<th data-quarto-table-cell-role="th">phys_mal_23</th>
+<th data-quarto-table-cell-role="th">phys_fem_23</th>
+<th data-quarto-table-cell-role="th">phys_lt30_23</th>
+<th data-quarto-table-cell-role="th">phys_30_39_23</th>
+<th data-quarto-table-cell-role="th">phys_40_49_23</th>
+<th data-quarto-table-cell-role="th">phys_50_59_23</th>
+<th data-quarto-table-cell-role="th">phys_ge60_23</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">popn_ge60_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_wh_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_bl_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_hsp_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_asn_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_nhpi_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_aian_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_2race_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_24</th>
+<th data-quarto-table-cell-role="th">popn_ge16_24</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>01</td>
+<td>AL</td>
+<td>12442</td>
+<td>8745</td>
+<td>3697</td>
+<td>1347</td>
+<td>2871</td>
+<td>2542</td>
+<td>2653</td>
+<td>3029</td>
+<td>...</td>
+<td>1225230</td>
+<td>2669822</td>
+<td>1029895</td>
+<td>176495</td>
+<td>59412</td>
+<td>1750</td>
+<td>12413</td>
+<td>107549</td>
+<td>5157699</td>
+<td>4162396</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>02</td>
+<td>AK</td>
+<td>2158</td>
+<td>1228</td>
+<td>930</td>
+<td>&lt;NA&gt;</td>
+<td>969</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>...</td>
+<td>142460</td>
+<td>354430</td>
+<td>18632</td>
+<td>36781</td>
+<td>38395</td>
+<td>7506</td>
+<td>70311</td>
+<td>47302</td>
+<td>740133</td>
+<td>585178</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>04</td>
+<td>AZ</td>
+<td>18253</td>
+<td>11945</td>
+<td>6308</td>
+<td>1195</td>
+<td>4341</td>
+<td>4353</td>
+<td>3832</td>
+<td>4532</td>
+<td>...</td>
+<td>1801501</td>
+<td>3351969</td>
+<td>251001</td>
+<td>1641695</td>
+<td>203974</td>
+<td>9832</td>
+<td>188166</td>
+<td>215471</td>
+<td>7582384</td>
+<td>6196952</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>05</td>
+<td>AR</td>
+<td>6493</td>
+<td>4291</td>
+<td>2202</td>
+<td>&lt;NA&gt;</td>
+<td>2045</td>
+<td>1726</td>
+<td>1081</td>
+<td>1244</td>
+<td>...</td>
+<td>718243</td>
+<td>1710143</td>
+<td>344512</td>
+<td>180103</td>
+<td>37972</td>
+<td>8790</td>
+<td>9939</td>
+<td>118564</td>
+<td>3088354</td>
+<td>2473780</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>06</td>
+<td>CA</td>
+<td>115435</td>
+<td>66542</td>
+<td>48893</td>
+<td>6227</td>
+<td>32051</td>
+<td>27622</td>
+<td>22741</td>
+<td>26794</td>
+<td>...</td>
+<td>8324858</td>
+<td>11770951</td>
+<td>1725177</td>
+<td>11664640</td>
+<td>4970431</td>
+<td>110764</td>
+<td>90089</td>
+<td>1221188</td>
+<td>39431263</td>
+<td>32075860</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 1448 columns</p>
+</div>
+</div>
+</div>
+<p>Next block is using pandas to describe the data.</p>
+<p>The region of each state is determined by the census, coming from this website: https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf</p>
+<p>The regions and their acronym’s - New England: NE - Middle Atlantic: MA - East North Central: ENC - West North Central: WNC - South Atlantic: SA - East South Central: ESC - West South Central: WSC - Mountain: M - Pacific: P - Whole United States: US This block will make a list of the column names. It will also print out all the unique state abbreviations, which will total 52, one for each state, the district of columbia, and the United States of America as a whole. It will also add each state to its census region, with the acroynm’s listed above. Finally, a new database will be created with fewer columns, keeping the ones more relevant to the analysis that will be conducted. This means keeping the overall numbers for different professions, but not specifics like the number of new graduates or the number of male or female practitioners.</p>
+<div id="8f300d23" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>list_col_names <span class="op">=</span> raw_pandas_dataframe.columns.tolist() <span class="co">#this is over 1000 columns, so it won't be printed</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>unique_st_abbrev <span class="op">=</span> raw_pandas_dataframe[<span class="st">'st_abbrev'</span>].unique() <span class="co">#all 50 states as well as the US as a whole and the District of Columbia</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>display(unique_st_abbrev)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># adding a region to each state</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>raw_pandas_dataframe[<span class="st">'region'</span>] <span class="op">=</span> [<span class="st">'ESC'</span>, <span class="st">'P'</span>, <span class="st">'M'</span>, <span class="st">'WSC'</span>, <span class="st">'P'</span>, <span class="st">'M'</span>, <span class="st">'NE'</span>, <span class="st">'SA'</span>, <span class="st">'SA'</span>, <span class="st">'SA'</span>, <span class="st">'SA'</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'P'</span>, <span class="st">'M'</span>, <span class="st">'ENC'</span>, <span class="st">'ENC'</span>, <span class="st">'WNC'</span>, <span class="st">'WNC'</span>, <span class="st">'ESC'</span>, <span class="st">'WSC'</span>, <span class="st">'NE'</span>, <span class="st">'SA'</span>, <span class="st">'NE'</span>, <span class="st">'ENC'</span>, <span class="st">'WNC'</span>, <span class="st">'ESC'</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'WNC'</span>, <span class="st">'M'</span>, <span class="st">'WNC'</span>, <span class="st">'M'</span>, <span class="st">'NE'</span>, <span class="st">'MA'</span>, <span class="st">'M'</span>, <span class="st">'MA'</span>, <span class="st">'SA'</span>, <span class="st">'WNC'</span>, <span class="st">'ENC'</span>, <span class="st">'WSC'</span>, <span class="st">'P'</span>, <span class="st">'MA'</span>, <span class="st">'NE'</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'SA'</span>, <span class="st">'WNC'</span>, <span class="st">'ESC'</span>, <span class="st">'WSC'</span>, <span class="st">'M'</span>, <span class="st">'NE'</span>, <span class="st">'SA'</span>, <span class="st">'P'</span>, <span class="st">'SA'</span>, <span class="st">'ENC'</span>, <span class="st">'M'</span>, <span class="st">'US'</span>]</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co"># making a smaller database that only contains what I am interested in</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>list_of_relevant_cols <span class="op">=</span> [<span class="st">'fips_st'</span>, <span class="st">'st_abbrev'</span>, <span class="st">'phys_wkforc_23'</span>, <span class="st">'pa_23'</span>, <span class="st">'rn_23'</span>, <span class="st">'dent_23'</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'pharm_23'</span>, <span class="st">'vetin_23'</span>, <span class="st">'podtrst_23'</span>, <span class="st">'chiro_23'</span>, <span class="st">'opto_23'</span>, <span class="st">'psychol_23'</span>,<span class="st">'conslrs_23'</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'socwk_23'</span>, <span class="st">'pt_23'</span>, <span class="st">'ot_23'</span>, <span class="st">'resp_ther_23'</span>, <span class="st">'spech_path_23'</span>, <span class="st">'massg_ther_23'</span>, <span class="st">'dietn_23'</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'medmgr_23'</span>, <span class="st">'med_secrtrs_23'</span>, <span class="st">'clin_lab_techs_23'</span>, <span class="st">'diag_reltd_techs_23'</span>, <span class="st">'emt_parmdcs_23'</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">'hlth_sup_techs_23'</span>, <span class="st">'med_rec_spec_23'</span>, <span class="st">'med_asst_23'</span>, <span class="st">'pharm_aide_23'</span>, <span class="st">'med_transcrp_23'</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">'vetin_asst_23'</span>, <span class="st">'phleb_23'</span>, <span class="st">'oth_hlthcar_23'</span>, <span class="st">'pers_care_aide_23'</span>, <span class="st">'nurse_aide_23'</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">'popn_pums_23'</span>, <span class="st">'popn_ge60_23'</span>, <span class="st">'popn_24'</span>, <span class="st">'region'</span>]</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>smaller_health_pandas_dataframe <span class="op">=</span> raw_pandas_dataframe[list_of_relevant_cols]</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>display(smaller_health_pandas_dataframe.head())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>array(['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA',
+       'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA',
+       'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY',
+       'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX',
+       'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'US'], dtype=object)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">fips_st</th>
+<th data-quarto-table-cell-role="th">st_abbrev</th>
+<th data-quarto-table-cell-role="th">phys_wkforc_23</th>
+<th data-quarto-table-cell-role="th">pa_23</th>
+<th data-quarto-table-cell-role="th">rn_23</th>
+<th data-quarto-table-cell-role="th">dent_23</th>
+<th data-quarto-table-cell-role="th">pharm_23</th>
+<th data-quarto-table-cell-role="th">vetin_23</th>
+<th data-quarto-table-cell-role="th">podtrst_23</th>
+<th data-quarto-table-cell-role="th">chiro_23</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">med_transcrp_23</th>
+<th data-quarto-table-cell-role="th">vetin_asst_23</th>
+<th data-quarto-table-cell-role="th">phleb_23</th>
+<th data-quarto-table-cell-role="th">oth_hlthcar_23</th>
+<th data-quarto-table-cell-role="th">pers_care_aide_23</th>
+<th data-quarto-table-cell-role="th">nurse_aide_23</th>
+<th data-quarto-table-cell-role="th">popn_pums_23</th>
+<th data-quarto-table-cell-role="th">popn_ge60_23</th>
+<th data-quarto-table-cell-role="th">popn_24</th>
+<th data-quarto-table-cell-role="th">region</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>1</td>
+<td>AL</td>
+<td>12442</td>
+<td>1301.0</td>
+<td>57118</td>
+<td>1830.0</td>
+<td>5788.0</td>
+<td>1503.0</td>
+<td>NaN</td>
+<td>500.0</td>
+<td>...</td>
+<td>863.0</td>
+<td>913.0</td>
+<td>1773.0</td>
+<td>2184</td>
+<td>13132</td>
+<td>27248</td>
+<td>5054253</td>
+<td>1225230</td>
+<td>5157699</td>
+<td>ESC</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2</td>
+<td>AK</td>
+<td>2158</td>
+<td>NaN</td>
+<td>8538</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>366</td>
+<td>4206</td>
+<td>4106</td>
+<td>733971</td>
+<td>142460</td>
+<td>740133</td>
+<td>P</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>4</td>
+<td>AZ</td>
+<td>18253</td>
+<td>3522.0</td>
+<td>67664</td>
+<td>4125.0</td>
+<td>7795.0</td>
+<td>2575.0</td>
+<td>374.0</td>
+<td>1716.0</td>
+<td>...</td>
+<td>1814.0</td>
+<td>1433.0</td>
+<td>3561.0</td>
+<td>4363</td>
+<td>39506</td>
+<td>21668</td>
+<td>7268175</td>
+<td>1801501</td>
+<td>7582384</td>
+<td>M</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>5</td>
+<td>AR</td>
+<td>6493</td>
+<td>630.0</td>
+<td>34031</td>
+<td>920.0</td>
+<td>2645.0</td>
+<td>496.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>...</td>
+<td>NaN</td>
+<td>1113.0</td>
+<td>1112.0</td>
+<td>1582</td>
+<td>11889</td>
+<td>21687</td>
+<td>3032651</td>
+<td>718243</td>
+<td>3088354</td>
+<td>WSC</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>6</td>
+<td>CA</td>
+<td>115435</td>
+<td>13769.0</td>
+<td>342017</td>
+<td>26082.0</td>
+<td>37806.0</td>
+<td>10311.0</td>
+<td>1272.0</td>
+<td>8176.0</td>
+<td>...</td>
+<td>5577.0</td>
+<td>9277.0</td>
+<td>13758.0</td>
+<td>20174</td>
+<td>362256</td>
+<td>147999</td>
+<td>39242785</td>
+<td>8324858</td>
+<td>39431263</td>
+<td>P</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 39 columns</p>
+</div>
+</div>
+</div>
+<p>The next block of code is doing the same thing as the above block of code, just in SQL</p>
+<p>The results of each sql query will be turned into a dataframe for ease of viewing in python</p>
+<p>Notes on differences in difficulty for certain tasks: - Making a new column in SQL was much more difficult - The lack of quotation marks in sql makes it tedious to transfer code from pandas to sql The code chunk below also creates a new table for adding a region and having smaller number of columns. This is because a view is just a snapshot of a table, so to make changes to the dataset requires changing the base table, as the view can’t have data added to it.</p>
+<div id="6c5e91a6" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>col_names_sql <span class="op">=</span> con.execute(<span class="st">"DESCRIBE healthcare"</span>).df()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(col_names_sql)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>unique_st_abbrev_sql <span class="op">=</span> con.execute(<span class="st">"SELECT DISTINCT st_abbrev FROM healthcare"</span>).df()</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>display(unique_st_abbrev_sql)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>state_regions_alphabetical <span class="op">=</span> [<span class="st">'ESC'</span>, <span class="st">'P'</span>, <span class="st">'M'</span>, <span class="st">'WSC'</span>, <span class="st">'P'</span>, <span class="st">'M'</span>, <span class="st">'NE'</span>, <span class="st">'SA'</span>, <span class="st">'SA'</span>, <span class="st">'SA'</span>, <span class="st">'SA'</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'P'</span>, <span class="st">'M'</span>, <span class="st">'ENC'</span>, <span class="st">'ENC'</span>, <span class="st">'WNC'</span>, <span class="st">'WNC'</span>, <span class="st">'ESC'</span>, <span class="st">'WSC'</span>, <span class="st">'NE'</span>, <span class="st">'SA'</span>, <span class="st">'NE'</span>, <span class="st">'ENC'</span>, <span class="st">'WNC'</span>, <span class="st">'ESC'</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'WNC'</span>, <span class="st">'M'</span>, <span class="st">'WNC'</span>, <span class="st">'M'</span>, <span class="st">'NE'</span>, <span class="st">'MA'</span>, <span class="st">'M'</span>, <span class="st">'MA'</span>, <span class="st">'SA'</span>, <span class="st">'WNC'</span>, <span class="st">'ENC'</span>, <span class="st">'WSC'</span>, <span class="st">'P'</span>, <span class="st">'MA'</span>, <span class="st">'NE'</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'SA'</span>, <span class="st">'WNC'</span>, <span class="st">'ESC'</span>, <span class="st">'WSC'</span>, <span class="st">'M'</span>, <span class="st">'NE'</span>, <span class="st">'SA'</span>, <span class="st">'P'</span>, <span class="st">'SA'</span>, <span class="st">'ENC'</span>, <span class="st">'M'</span>, <span class="st">'US'</span>]</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>fips_code <span class="op">=</span> [<span class="st">'01'</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="st">'02'</span>,<span class="st">'04'</span>,<span class="st">'05'</span>,<span class="st">'06'</span>,<span class="st">'08'</span>,<span class="st">'09'</span>, <span class="st">'10'</span>,<span class="st">'11'</span>, <span class="st">'12'</span>, <span class="st">'13'</span>, <span class="st">'15'</span>,<span class="st">'16'</span>, <span class="st">'17'</span>, <span class="st">'18'</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>             <span class="st">'19'</span>,<span class="st">'20'</span>,<span class="st">'21'</span>,<span class="st">'22'</span>, <span class="st">'23'</span>, <span class="st">'24'</span>, <span class="st">'25'</span>, <span class="st">'26'</span>, <span class="st">'27'</span>,<span class="st">'28'</span>, <span class="st">'29'</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>             <span class="st">'30'</span>, <span class="st">'31'</span>,<span class="st">'32'</span>, <span class="st">'33'</span>, <span class="st">'34'</span>, <span class="st">'35'</span>, <span class="st">'36'</span>, <span class="st">'37'</span>, <span class="st">'38'</span>, <span class="st">'39'</span>, <span class="st">'40'</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>             <span class="st">'41'</span>, <span class="st">'42'</span>, <span class="st">'44'</span>, <span class="st">'45'</span>, <span class="st">'46'</span>, <span class="st">'47'</span>, <span class="st">'48'</span>, <span class="st">'49'</span>, <span class="st">'50'</span>, <span class="st">'51'</span>, <span class="st">'53'</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>             <span class="st">'54'</span>, <span class="st">'55'</span>, <span class="st">'56'</span>, <span class="st">'91'</span>]</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="ss">f"""</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="ss">  CREATE OR REPLACE TABLE healthcare_table AS</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="ss">  SELECT *, '99' AS region FROM read_csv('</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">')</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="ss">"""</span>)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>string_to_execute <span class="op">=</span> <span class="st">"""UPDATE healthcare_table SET region = CASE fips_st"""</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(state_regions_alphabetical)):</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    string_to_execute <span class="op">=</span> string_to_execute <span class="op">+</span> <span class="ss">f""" WHEN '</span><span class="sc">{</span>fips_code[i]<span class="sc">}</span><span class="ss">' THEN '</span><span class="sc">{</span>state_regions_alphabetical[i]<span class="sc">}</span><span class="ss">' """</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>string_to_execute <span class="op">=</span> string_to_execute <span class="op">+</span> <span class="ss">f"""END"""</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>con.execute(string_to_execute)</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>display(con.execute(<span class="st">"SELECT * FROM healthcare_table"</span>).df().head())</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="ss">f"""</span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="ss">  CREATE OR REPLACE TABLE small_healthcare_table AS</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a><span class="ss">  SELECT fips_st, st_abbrev, phys_wkforc_23, pa_23, rn_23, dent_23,</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a><span class="ss">    pharm_23, vetin_23, podtrst_23, chiro_23, opto_23, psychol_23,conslrs_23,</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a><span class="ss">    socwk_23, pt_23, ot_23, resp_ther_23, spech_path_23, massg_ther_23, dietn_23,</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a><span class="ss">    medmgr_23, med_secrtrs_23, clin_lab_techs_23, diag_reltd_techs_23, emt_parmdcs_23,</span></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a><span class="ss">    hlth_sup_techs_23, med_rec_spec_23, med_asst_23, pharm_aide_23, med_transcrp_23,</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a><span class="ss">    vetin_asst_23, phleb_23, oth_hlthcar_23, pers_care_aide_23, nurse_aide_23,</span></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a><span class="ss">    popn_pums_23, popn_ge60_23, popn_24, region FROM healthcare_table</span></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a><span class="ss">"""</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             column_name column_type null   key default extra
+0                fips_st     VARCHAR  YES  None    None  None
+1              st_abbrev     VARCHAR  YES  None    None  None
+2         phys_wkforc_23      BIGINT  YES  None    None  None
+3            phys_mal_23      BIGINT  YES  None    None  None
+4            phys_fem_23      BIGINT  YES  None    None  None
+...                  ...         ...  ...   ...     ...   ...
+1443   popn_nhpi_ge16_23      BIGINT  YES  None    None  None
+1444   popn_aian_ge16_23      BIGINT  YES  None    None  None
+1445  popn_2race_ge16_23      BIGINT  YES  None    None  None
+1446             popn_24      BIGINT  YES  None    None  None
+1447        popn_ge16_24      BIGINT  YES  None    None  None
+
+[1448 rows x 6 columns]</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">st_abbrev</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>CO</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>MD</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>MA</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>AR</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>CT</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>MS</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>VT</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>VA</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>WV</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>WA</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>NY</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>PA</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>HI</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>NC</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>DC</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>IL</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>IN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>NE</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>US</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>FL</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>LA</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>ME</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">22</th>
+<td>KS</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">23</th>
+<td>MN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24</th>
+<td>NM</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25</th>
+<td>UT</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">26</th>
+<td>ID</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">27</th>
+<td>AK</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">28</th>
+<td>CA</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">29</th>
+<td>MI</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">30</th>
+<td>NV</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">31</th>
+<td>TX</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">32</th>
+<td>GA</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">33</th>
+<td>WI</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">34</th>
+<td>AL</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">35</th>
+<td>IA</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">36</th>
+<td>MT</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">37</th>
+<td>OH</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">38</th>
+<td>OR</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">39</th>
+<td>KY</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">40</th>
+<td>NJ</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">41</th>
+<td>ND</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">42</th>
+<td>RI</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">43</th>
+<td>SC</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">44</th>
+<td>SD</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">45</th>
+<td>TN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">46</th>
+<td>AZ</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">47</th>
+<td>DE</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">48</th>
+<td>MO</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">49</th>
+<td>OK</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">50</th>
+<td>NH</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">51</th>
+<td>WY</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">fips_st</th>
+<th data-quarto-table-cell-role="th">st_abbrev</th>
+<th data-quarto-table-cell-role="th">phys_wkforc_23</th>
+<th data-quarto-table-cell-role="th">phys_mal_23</th>
+<th data-quarto-table-cell-role="th">phys_fem_23</th>
+<th data-quarto-table-cell-role="th">phys_lt30_23</th>
+<th data-quarto-table-cell-role="th">phys_30_39_23</th>
+<th data-quarto-table-cell-role="th">phys_40_49_23</th>
+<th data-quarto-table-cell-role="th">phys_50_59_23</th>
+<th data-quarto-table-cell-role="th">phys_ge60_23</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">popn_wh_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_bl_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_hsp_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_asn_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_nhpi_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_aian_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_2race_ge16_23</th>
+<th data-quarto-table-cell-role="th">popn_24</th>
+<th data-quarto-table-cell-role="th">popn_ge16_24</th>
+<th data-quarto-table-cell-role="th">region</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>01</td>
+<td>AL</td>
+<td>12442</td>
+<td>8745</td>
+<td>3697</td>
+<td>1347</td>
+<td>2871</td>
+<td>2542</td>
+<td>2653</td>
+<td>3029</td>
+<td>...</td>
+<td>2669822</td>
+<td>1029895</td>
+<td>176495</td>
+<td>59412</td>
+<td>1750</td>
+<td>12413</td>
+<td>107549</td>
+<td>5157699</td>
+<td>4162396</td>
+<td>ESC</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>02</td>
+<td>AK</td>
+<td>2158</td>
+<td>1228</td>
+<td>930</td>
+<td>&lt;NA&gt;</td>
+<td>969</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>...</td>
+<td>354430</td>
+<td>18632</td>
+<td>36781</td>
+<td>38395</td>
+<td>7506</td>
+<td>70311</td>
+<td>47302</td>
+<td>740133</td>
+<td>585178</td>
+<td>P</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>04</td>
+<td>AZ</td>
+<td>18253</td>
+<td>11945</td>
+<td>6308</td>
+<td>1195</td>
+<td>4341</td>
+<td>4353</td>
+<td>3832</td>
+<td>4532</td>
+<td>...</td>
+<td>3351969</td>
+<td>251001</td>
+<td>1641695</td>
+<td>203974</td>
+<td>9832</td>
+<td>188166</td>
+<td>215471</td>
+<td>7582384</td>
+<td>6196952</td>
+<td>M</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>05</td>
+<td>AR</td>
+<td>6493</td>
+<td>4291</td>
+<td>2202</td>
+<td>&lt;NA&gt;</td>
+<td>2045</td>
+<td>1726</td>
+<td>1081</td>
+<td>1244</td>
+<td>...</td>
+<td>1710143</td>
+<td>344512</td>
+<td>180103</td>
+<td>37972</td>
+<td>8790</td>
+<td>9939</td>
+<td>118564</td>
+<td>3088354</td>
+<td>2473780</td>
+<td>WSC</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>06</td>
+<td>CA</td>
+<td>115435</td>
+<td>66542</td>
+<td>48893</td>
+<td>6227</td>
+<td>32051</td>
+<td>27622</td>
+<td>22741</td>
+<td>26794</td>
+<td>...</td>
+<td>11770951</td>
+<td>1725177</td>
+<td>11664640</td>
+<td>4970431</td>
+<td>110764</td>
+<td>90089</td>
+<td>1221188</td>
+<td>39431263</td>
+<td>32075860</td>
+<td>P</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 1449 columns</p>
+</div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="103">
+<pre><code>&lt;_duckdb.DuckDBPyConnection at 0x132cbd030&gt;</code></pre>
+</div>
+</div>
+<p>The below code chunk will create some plots that explore the data</p>
+<p>The plots are listed below in order and what they will do</p>
+<ol type="1">
+<li>The first plot explores the ratio of physicians to the total population of the state</li>
+<li>The second plot explores the ratio of physicians assistants to the total population of the state</li>
+</ol>
+<div id="e833c612" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>plt.bar(smaller_health_pandas_dataframe[<span class="st">'st_abbrev'</span>], smaller_health_pandas_dataframe[<span class="st">'phys_wkforc_23'</span>]<span class="op">/</span>smaller_health_pandas_dataframe[<span class="st">'popn_pums_23'</span>], color<span class="op">=</span><span class="st">'skyblue'</span>, width<span class="op">=</span><span class="fl">0.2</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>plt.bar(smaller_health_pandas_dataframe[<span class="st">'st_abbrev'</span>], smaller_health_pandas_dataframe[<span class="st">'pa_23'</span>]<span class="op">/</span>smaller_health_pandas_dataframe[<span class="st">'phys_wkforc_23'</span>], color<span class="op">=</span><span class="st">'red'</span>, width<span class="op">=</span><span class="fl">0.2</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="engineering_files/figure-html/cell-7-output-1.png" width="811" height="500" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="engineering_files/figure-html/cell-7-output-2.png" width="802" height="498" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The next code chunk will save the two dataframes as a parquet file for easier storage and future access</p>
+<div id="f29dd85e" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>raw_pandas_dataframe.to_parquet(<span class="st">'Data/clean_data/large_2024_health_data.parquet'</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>smaller_health_pandas_dataframe.to_parquet(<span class="st">'Data/clean_data/small_2024_health_data.parquet'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

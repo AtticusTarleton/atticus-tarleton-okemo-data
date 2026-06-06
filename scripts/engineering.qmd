@@ -5,7 +5,10 @@ date: today
 description: Data Cleaning and Processing for this project
 jupyter: python3
 execute:
-  eval: false
+  eval: true
+format:
+  html: default
+  pdf: default
 ---
 
 
@@ -49,7 +52,9 @@ raw_sql_dataframe.head()
 ```
 
 Next block is using pandas to describe the data.
+
 The region of each state is determined by the census, coming from this website: https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf
+
 The regions and their acronym's
 - New England: NE
 - Middle Atlantic: MA
@@ -67,14 +72,13 @@ It will also add each state to its census region, with the acroynm's listed abov
 list_col_names = raw_pandas_dataframe.columns.tolist() #this is over 1000 columns, so it won't be printed
 
 unique_st_abbrev = raw_pandas_dataframe['st_abbrev'].unique() #all 50 states as well as the US as a whole and the District of Columbia
-print(unique_st_abbrev)
+display(unique_st_abbrev)
 
 # adding a region to each state
 raw_pandas_dataframe['region'] = ['ESC', 'P', 'M', 'WSC', 'P', 'M', 'NE', 'SA', 'SA', 'SA', 'SA',
     'P', 'M', 'ENC', 'ENC', 'WNC', 'WNC', 'ESC', 'WSC', 'NE', 'SA', 'NE', 'ENC', 'WNC', 'ESC',
     'WNC', 'M', 'WNC', 'M', 'NE', 'MA', 'M', 'MA', 'SA', 'WNC', 'ENC', 'WSC', 'P', 'MA', 'NE',
     'SA', 'WNC', 'ESC', 'WSC', 'M', 'NE', 'SA', 'P', 'SA', 'ENC', 'M', 'US']
-print(raw_pandas_dataframe[['st_abbrev','region']]) #double checking to make sure the states are aligned with their region
 
 # making a smaller database that only contains what I am interested in
 list_of_relevant_cols = ['fips_st', 'st_abbrev', 'phys_wkforc_23', 'pa_23', 'rn_23', 'dent_23',
@@ -85,11 +89,13 @@ list_of_relevant_cols = ['fips_st', 'st_abbrev', 'phys_wkforc_23', 'pa_23', 'rn_
     'vetin_asst_23', 'phleb_23', 'oth_hlthcar_23', 'pers_care_aide_23', 'nurse_aide_23',
     'popn_pums_23', 'popn_ge60_23', 'popn_24', 'region']
 smaller_health_pandas_dataframe = raw_pandas_dataframe[list_of_relevant_cols]
-print(smaller_health_pandas_dataframe.head())
+display(smaller_health_pandas_dataframe.head())
 ```
 
 The next block of code is doing the same thing as the above block of code, just in SQL
+
 The results of each sql query will be turned into a dataframe for ease of viewing in python
+
 Notes on differences in difficulty for certain tasks:
 - Making a new column in SQL was much more difficult
 - The lack of quotation marks in sql makes it tedious to transfer code from pandas to sql
@@ -100,7 +106,7 @@ col_names_sql = con.execute("DESCRIBE healthcare").df()
 print(col_names_sql)
 
 unique_st_abbrev_sql = con.execute("SELECT DISTINCT st_abbrev FROM healthcare").df()
-print(unique_st_abbrev_sql)
+display(unique_st_abbrev_sql)
 
 state_regions_alphabetical = ['ESC', 'P', 'M', 'WSC', 'P', 'M', 'NE', 'SA', 'SA', 'SA', 'SA',
     'P', 'M', 'ENC', 'ENC', 'WNC', 'WNC', 'ESC', 'WSC', 'NE', 'SA', 'NE', 'ENC', 'WNC', 'ESC',
@@ -123,7 +129,7 @@ for i in range(len(state_regions_alphabetical)):
 string_to_execute = string_to_execute + f"""END"""
 con.execute(string_to_execute)
 
-print(con.execute("SELECT * FROM healthcare_table").df().head()) #double checking the work
+display(con.execute("SELECT * FROM healthcare_table").df().head())
 
 con.execute(f"""
   CREATE OR REPLACE TABLE small_healthcare_table AS
@@ -140,18 +146,20 @@ con.execute(f"""
 
 
 The below code chunk will create some plots that explore the data
+
 The plots are listed below in order and what they will do
+
 1) The first plot explores the ratio of physicians to the total population of the state
-1) The second plot explores the ratio of physicians assistants to the total population of the state
+2) The second plot explores the ratio of physicians assistants to the total population of the state
 ```{python}
 import matplotlib.pyplot as plt
 
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(10, 6))
 plt.xticks(rotation=300)
 plt.bar(smaller_health_pandas_dataframe['st_abbrev'], smaller_health_pandas_dataframe['phys_wkforc_23']/smaller_health_pandas_dataframe['popn_pums_23'], color='skyblue', width=0.2)
 plt.show()
 
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(10, 6))
 plt.xticks(rotation=300)
 plt.bar(smaller_health_pandas_dataframe['st_abbrev'], smaller_health_pandas_dataframe['pa_23']/smaller_health_pandas_dataframe['phys_wkforc_23'], color='red', width=0.2)
 plt.show()
