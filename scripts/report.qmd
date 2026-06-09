@@ -25,6 +25,7 @@ os.chdir(_project_root)
 print(os.getcwd())
 ```
 
+## Creating the database and some more data engineering
 
 The below code block is going to create a database connection to the large and small clean healthcare databases made in the engineering.qmd file
 ```{python}
@@ -78,9 +79,42 @@ small_combined_ratio_df = small_ratio_df[(small_ratio_df['st_abbrev'] == 'VT') |
 small_combined_ratio_melted = small_combined_ratio_df.melt(id_vars='st_abbrev',
                     value_vars=occupation_count_columns,
                     var_name='occupation', value_name='ratio')
+
+# to find columns with nan values so they can be removed
+with pd.option_context('display.max_columns', None):
+    print(small_health_df[(small_health_df['st_abbrev'] != 'VT') & (small_health_df['region'] =='NE')])
+    #columns with nan values: podtrst, chiro, opto, dietn, pharm_aide, med_transcrp, vetin_asst, phleb,
+
+occupation_count_columns_ne = occupation_count_columns
+occupation_count_columns_ne.remove('podtrst_23')
+occupation_count_columns_ne.remove('chiro_23')
+occupation_count_columns_ne.remove('opto_23')
+occupation_count_columns_ne.remove('dietn_23')
+occupation_count_columns_ne.remove('pharm_aide_23')
+occupation_count_columns_ne.remove('med_transcrp_23')
+occupation_count_columns_ne.remove('vetin_asst_23')
+occupation_count_columns_ne.remove('phleb_23')
+
+ne_without_vt_sum_df = small_health_df[(small_health_df['st_abbrev'] != 'VT') & (small_health_df['region'] =='NE')].sum()
+vt_only_df = small_health_df.iloc[45]
+ne_without_vt_sum_df['st_abbrev'] = 'NE'
+ne_without_vt_sum_df['region'] = 'NE'
+ne_without_vt_sum_df['fips_st'] = '-99' #representing a null value
+vt_and_ne_df = pd.DataFrame([vt_only_df, ne_without_vt_sum_df])
+vt_and_ne_df = vt_and_ne_df.reset_index().drop('index', axis=1)
+
+vt_and_ne_ratio_df = vt_and_ne_df.copy()
+for i in occupation_count_columns:
+    vt_and_ne_ratio_df[i] = vt_and_ne_ratio_df[i]/vt_and_ne_ratio_df['popn_pums_23']
+
+vt_and_ne_ratio_melted = vt_and_ne_ratio_df.melt(id_vars='st_abbrev',
+                    value_vars=occupation_count_columns,
+                    var_name='occupation', value_name='ratio')
 ```
 
-The code chunk below answers question 2 in pandas
+## Exploratory Data Analysis
+
+The code chunk below answers the question of which states have the most physicians, and which ones have the least using Pandas
 ```{python}
 physician_sorted_df = small_health_df.drop(51).sort_values(by='phys_wkforc_23', ascending=False)[['st_abbrev', 'phys_wkforc_23', 'popn_pums_23']]
 print("\n the 10 states with the most physicians")
@@ -88,7 +122,8 @@ display(physician_sorted_df.head(10))
 print("\nthe 10 states with the fewest physicians")
 display(physician_sorted_df.tail(10))
 ```
-The code chunk below answers question 2 in SQL
+
+The code chunk below answers the of which states have the most physicians, and which ones have the least using SQL
 ```{python}
 print("\n the 10 states with the most physicians")
 display(con.execute("""SELECT st_abbrev, phys_wkforc_23, popn_pums_23
@@ -101,43 +136,75 @@ display(con.execute("""SELECT st_abbrev, phys_wkforc_23, popn_pums_23
      ORDER BY phys_wkforc_23 LIMIT 10""").df())
 ```
 
-The code chunk below answers question 3 in pandas
+The code chunk below answers the question of what states have the largest and smallest ratio of health care professionals using Pandas
 ```{python}
 small_ratio_df.sort_values(by='phys_wkforc_23', ascending=False)[['st_abbrev', 'phys_wkforc_23', 'popn_pums_23']]
 ```
 
-The code chunk below answers question 3 in SQL
+The code chunk below answers the question of what states have the largest and smallest ratio of health care professionals using SQL
 ```{python}
 con.execute("ALTER TABLE small_healthcare ADD phys_wkforc_ratio_23 FLOAT")
 con.execute("UPDATE small_healthcare SET phys_wkforc_ratio_23 = phys_wkforc_23/popn_pums_23")
 display(con.execute("SELECT st_abbrev, phys_wkforc_ratio_23, popn_pums_23 FROM small_healthcare ORDER BY phys_wkforc_ratio_23 DESC").df())
 ```
 
+## Plotting
+The goal of this section is to now dive into how Vermont compares to the United States, as well as other states like Vermont
+
+
+
 
 The code chunk below does the plotting for the first plot
 
-
 What this plot is supposed to show is the ratio of different workers in different health care professions in Vermont compared to the US as a whole. This will be helpful in understanding how Vermont's healthcare system compares to the US.
-
-
-For the results of this first plot, I am expecting to see that Vermont and the US have similar ratios of health care professionals to their population size.
-Some of this is because Vermont is part of the US, and so while there are substantive differences in culture across the US, I would assume that the rough amount of health care available is similar.
-Vermont also has the 19th highest median income of any state in the US ([See this article for more info](https://www.burlingtonfreepress.com/story/money/2025/10/19/vermont-19th-highest-median-household-income-of-all-states-visual-capitalist-ranking/86751681007/?gnt-cfr=1&gca-cat=p&gca-uir=true&gca-epti=z113426p001950c001950e004400v113426d--34--b--34--&gca-ft=144&gca-ds=sophi)).
-I am assuming that median income roughly correlates to the number of health care professionals, as the higher the median income the more health care professionals a population can support in general. This is does have to do with the capitalist nature of private hospitals and systemic bias present in the US healthcare system, but it is an assumption I am making.
-Putting this together, because Vermont's median income is slightly higher than the average state, I am guess that Vermont has slightly ratio of health care professionals to its total population than the US as a whole, potentially with more professionals in fields that tend to have more elderly patients as well.
 
 
 ```{python}
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-plt.figure(figsize=(14, 8))
+plt.figure(figsize=(12, 5))
 plt.xticks(rotation=90)
 sns.barplot(data=small_combined_ratio_melted, x='occupation', y='ratio', hue='st_abbrev')
-plt.title("Bar Plot Comparing the Ratio of Different Kinds of Health Care Professionals to the Total Population for Vermont and the United States")
+plt.title("Bar Plot Comparing the Ratio of Different Kinds of Health Care Professionals to the\nTotal Population for Vermont and the United States")
 plt.show()
 ```
 
-Looking at the plot now, I do see what I expected to see. Vermont has more physicians than the US on average, and tends to have a slightly higher ratio of health professionals in general.
+Looking at the plot now, we see that Vermont has more physicians than the US on average, and tends to have a slightly higher ratio of health professionals in general.
 While there are a number of professions where there is no blue bar, this is because there was no data collected for those professions, rather than there being basically no one practicing them.
 Besides the fact that the professions with no data in Vermont are generally the least numerous professions, I know that at least some of the lack of data is because it is not collected not that there is no one practicing those professions, as one bar with no data is ot_23, standing for occupational therapist and I know there are occupational therapists currently practicing in Vermont.
+
+
+
+
+The code chunk below does the plotting for the second plot
+
+```{python}
+plt.figure(figsize=(12, 5))
+plt.xticks(rotation=90)
+sns.barplot(data=vt_and_ne_ratio_melted, x='occupation', y='ratio', hue='st_abbrev')
+plt.title("Bar Plot Comparing the Ratio of Different Kinds of Health Care Professionals to the\nTotal Population for Vermont and the Rest of the Northeast")
+plt.show()
+```
+This plot takes looking at the whole of the United States, and narrows it down to the rest of the northeast. This means that Vermont
+is being compared to similar states, namely Connecticut, Maine, Massachusetts, New Hampshire, and Rhode Island. This was done by adding the
+the profession numbers as well as the populations of those states together, and dividing the profession numbers by the summed population to get a ratio of professionals
+to population for the entire Northeast leaving out Vermont. Vermont is left out because there are not too a lot of states in the Northeast, and if Vermont was left in, its
+numbers would skew the Northeast average closer to Vermont's, and the goal here is not to find the northeast average, but to compare Vermont's health care profession ratio's
+to other similar states.
+
+Looking at the results, we can see that Vermont and the other Northeast States are pretty similar. For most of the ratio's, we can see that the other Northeast States have on
+average slightly more health-care professionals compared to their total population. That being said, Vermont does have a substantially larger ratio of
+counselors and personal care aides, as well as slightly more social workers, repository therapists, speech pathologists, and massage therapists.
+
+## Conclusion
+In conclusion, Vermont is similar to the rest of the Northeast when it comes to the ratio of health care professionals to its total population.
+That being said, the Northeast as a whole has a larger ratio of health professionals to its population, and Vermont tends to have ratios greater than
+the United States as a whole.
+
+If your looking for something surprising, the amount of counselors Vermont has is quite surprising, with its ratio being about double the ratio that the United States had.
+Beyond that, there was nothing too surprising in the data to me as a non-expert, though if you are an expert some of the numbers might be more shocking.
+
+While I am wrapping up this project right now, if I have more time to devote to this then doing analysis on the cosine similarly of and k-means clustering on the ratio's of health professions between
+states would be interesting. I picked the Northeast region as a whole when looking for other states that are similar to Vermont, but it would be interesting seeing what the data actually says
+about which states are similar.

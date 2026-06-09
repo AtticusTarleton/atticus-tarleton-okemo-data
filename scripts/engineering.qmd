@@ -27,6 +27,8 @@ os.chdir(_project_root)
 print(os.getcwd())
 ```
 
+## Reading in the data
+
 Below is a code block that takes a csv and reads it in as a pandas dataframe. what this means is it takes the csv stored on the hard drive and turns it into a database stored on RAM that is much easier to access and manipulate
 ```{python}
 import pandas as pd
@@ -50,6 +52,7 @@ con.execute(f"""
 raw_sql_dataframe = con.execute("SELECT * FROM healthcare").df()
 raw_sql_dataframe.head()
 ```
+## Adding in more features
 
 Next block is using pandas to describe the data.
 
@@ -143,7 +146,7 @@ con.execute(f"""
 """)
 ```
 
-
+## Exploratory Data Analysis
 
 The below code chunk will create some plots that explore the data
 
@@ -164,6 +167,8 @@ plt.xticks(rotation=300)
 plt.bar(smaller_health_pandas_dataframe['st_abbrev'], smaller_health_pandas_dataframe['pa_23']/smaller_health_pandas_dataframe['phys_wkforc_23'], color='red', width=0.2)
 plt.show()
 ```
+
+## Saving the data
 
 The next code chunk will save the two dataframes as a parquet file for easier storage and future access
 ```{python}

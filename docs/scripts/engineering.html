@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Atticus Tarleton">
-<meta name="dcterms.date" content="2026-06-05">
+<meta name="dcterms.date" content="2026-06-08">
 <meta name="description" content="Data Cleaning and Processing for this project">
 
 <title>Data Engineering – Data Analysis Project on Health Care Profession Counts</title>
@@ -174,14 +174,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
     </ul>
     </div>
-    
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#reading-in-the-data" id="toc-reading-in-the-data" class="nav-link active" data-scroll-target="#reading-in-the-data">Reading in the data</a></li>
+  <li><a href="#adding-in-more-features" id="toc-adding-in-more-features" class="nav-link" data-scroll-target="#adding-in-more-features">Adding in more features</a></li>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis">Exploratory Data Analysis</a></li>
+  <li><a href="#saving-the-data" id="toc-saving-the-data" class="nav-link" data-scroll-target="#saving-the-data">Saving the data</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="engineering.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-    <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="engineering.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></div>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
 <!-- main -->
-<main class="content column-body" id="quarto-document-content">
+<main class="content column-page-right" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../scripts/engineering.html">Scripts</a></li><li class="breadcrumb-item"><a href="../scripts/engineering.html">Data Engineering</a></li></ol></nav>
 <div class="quarto-title">
@@ -195,7 +204,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 
 
-<div class="quarto-title-meta column-body">
+<div class="quarto-title-meta column-page-right">
 
     <div>
     <div class="quarto-title-meta-heading">Author</div>
@@ -207,7 +216,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 5, 2026</p>
+      <p class="date">June 8, 2026</p>
     </div>
   </div>
   
@@ -220,7 +229,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>Below is the code block that moves the project root to the right place. Basically, it sets the root to this file, then moves back until it reaches the where the git info is stored to determine the code repository root</p>
-<div id="6bf6dc4e" class="cell" data-execution_count="1">
+<div id="7f1333b9" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -235,8 +244,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>/Users/AGT/Desktop/ORCA/OkemoDataLearningProject</code></pre>
 </div>
 </div>
+<section id="reading-in-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="reading-in-the-data">Reading in the data</h2>
 <p>Below is a code block that takes a csv and reads it in as a pandas dataframe. what this means is it takes the csv stored on the hard drive and turns it into a database stored on RAM that is much easier to access and manipulate</p>
-<div id="7bcb4672" class="cell" data-execution_count="2">
+<div id="b32cfc18" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -244,7 +255,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>raw_pandas_dataframe <span class="op">=</span> pd.read_csv(path) <span class="co">#reading the data</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>raw_pandas_dataframe.head() <span class="co">#checking to make sure the above line worked</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="100">
+<div class="cell-output cell-output-display" data-execution_count="44">
 <div>
 
 
@@ -404,7 +415,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>The below code takes the csv, and turns the csv into a sql database in memory using duckdb. it then uses duckdb to select everything from the sql database and turn it into a pandas dataframe to display more easily</p>
-<div id="3474be73" class="cell" data-execution_count="3">
+<div id="7acbe584" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> duckdb.<span class="ex">connect</span>()</span>
@@ -414,7 +425,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ss">"""</span>)</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>raw_sql_dataframe <span class="op">=</span> con.execute(<span class="st">"SELECT * FROM healthcare"</span>).df()</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>raw_sql_dataframe.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="101">
+<div class="cell-output cell-output-display" data-execution_count="45">
 <div>
 
 
@@ -573,10 +584,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+</section>
+<section id="adding-in-more-features" class="level2">
+<h2 class="anchored" data-anchor-id="adding-in-more-features">Adding in more features</h2>
 <p>Next block is using pandas to describe the data.</p>
 <p>The region of each state is determined by the census, coming from this website: https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf</p>
 <p>The regions and their acronym’s - New England: NE - Middle Atlantic: MA - East North Central: ENC - West North Central: WNC - South Atlantic: SA - East South Central: ESC - West South Central: WSC - Mountain: M - Pacific: P - Whole United States: US This block will make a list of the column names. It will also print out all the unique state abbreviations, which will total 52, one for each state, the district of columbia, and the United States of America as a whole. It will also add each state to its census region, with the acroynm’s listed above. Finally, a new database will be created with fewer columns, keeping the ones more relevant to the analysis that will be conducted. This means keeping the overall numbers for different professions, but not specifics like the number of new graduates or the number of male or female practitioners.</p>
-<div id="8f300d23" class="cell" data-execution_count="4">
+<div id="70c6479f" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>list_col_names <span class="op">=</span> raw_pandas_dataframe.columns.tolist() <span class="co">#this is over 1000 columns, so it won't be printed</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>unique_st_abbrev <span class="op">=</span> raw_pandas_dataframe[<span class="st">'st_abbrev'</span>].unique() <span class="co">#all 50 states as well as the US as a whole and the District of Columbia</span></span>
@@ -767,7 +781,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The next block of code is doing the same thing as the above block of code, just in SQL</p>
 <p>The results of each sql query will be turned into a dataframe for ease of viewing in python</p>
 <p>Notes on differences in difficulty for certain tasks: - Making a new column in SQL was much more difficult - The lack of quotation marks in sql makes it tedious to transfer code from pandas to sql The code chunk below also creates a new table for adding a region and having smaller number of columns. This is because a view is just a snapshot of a table, so to make changes to the dataset requires changing the base table, as the view can’t have data added to it.</p>
-<div id="6c5e91a6" class="cell" data-execution_count="5">
+<div id="fcace29a" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>col_names_sql <span class="op">=</span> con.execute(<span class="st">"DESCRIBE healthcare"</span>).df()</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(col_names_sql)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -837,43 +851,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
-<td>CO</td>
+<td>WA</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
-<td>MD</td>
+<td>GA</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
-<td>MA</td>
+<td>WI</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">3</th>
-<td>AR</td>
+<td>KS</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">4</th>
-<td>CT</td>
+<td>MN</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">5</th>
-<td>MS</td>
+<td>NM</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">6</th>
-<td>VT</td>
+<td>UT</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">7</th>
-<td>VA</td>
+<td>CO</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">8</th>
-<td>WV</td>
+<td>MD</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">9</th>
-<td>WA</td>
+<td>MA</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">10</th>
@@ -885,139 +899,139 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">12</th>
-<td>HI</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">13</th>
-<td>NC</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">14</th>
 <td>DC</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">15</th>
+<th data-quarto-table-cell-role="th">13</th>
 <td>IL</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">16</th>
+<th data-quarto-table-cell-role="th">14</th>
 <td>IN</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">17</th>
+<th data-quarto-table-cell-role="th">15</th>
 <td>NE</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">18</th>
+<th data-quarto-table-cell-role="th">16</th>
 <td>US</td>
 </tr>
 <tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>ID</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>HI</td>
+</tr>
+<tr class="even">
 <th data-quarto-table-cell-role="th">19</th>
-<td>FL</td>
+<td>NC</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">20</th>
-<td>LA</td>
+<td>FL</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">21</th>
-<td>ME</td>
+<td>LA</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">22</th>
-<td>KS</td>
+<td>ME</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">23</th>
-<td>MN</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">24</th>
-<td>NM</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">25</th>
-<td>UT</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">26</th>
-<td>ID</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">27</th>
 <td>AK</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">28</th>
+<th data-quarto-table-cell-role="th">24</th>
 <td>CA</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">29</th>
+<th data-quarto-table-cell-role="th">25</th>
 <td>MI</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">30</th>
+<th data-quarto-table-cell-role="th">26</th>
 <td>NV</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">31</th>
+<th data-quarto-table-cell-role="th">27</th>
 <td>TX</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">32</th>
-<td>GA</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">33</th>
-<td>WI</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">34</th>
+<th data-quarto-table-cell-role="th">28</th>
 <td>AL</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">35</th>
+<th data-quarto-table-cell-role="th">29</th>
 <td>IA</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">36</th>
+<th data-quarto-table-cell-role="th">30</th>
 <td>MT</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">37</th>
+<th data-quarto-table-cell-role="th">31</th>
 <td>OH</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">38</th>
+<th data-quarto-table-cell-role="th">32</th>
 <td>OR</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">39</th>
+<th data-quarto-table-cell-role="th">33</th>
 <td>KY</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">40</th>
+<th data-quarto-table-cell-role="th">34</th>
 <td>NJ</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">41</th>
+<th data-quarto-table-cell-role="th">35</th>
 <td>ND</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">42</th>
+<th data-quarto-table-cell-role="th">36</th>
 <td>RI</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">43</th>
+<th data-quarto-table-cell-role="th">37</th>
 <td>SC</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">44</th>
+<th data-quarto-table-cell-role="th">38</th>
 <td>SD</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">45</th>
+<th data-quarto-table-cell-role="th">39</th>
 <td>TN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">40</th>
+<td>AR</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">41</th>
+<td>CT</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">42</th>
+<td>MS</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">43</th>
+<td>VT</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">44</th>
+<td>VA</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">45</th>
+<td>WV</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">46</th>
@@ -1206,17 +1220,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>5 rows × 1449 columns</p>
 </div>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="103">
-<pre><code>&lt;_duckdb.DuckDBPyConnection at 0x132cbd030&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="47">
+<pre><code>&lt;_duckdb.DuckDBPyConnection at 0x11f4af530&gt;</code></pre>
 </div>
 </div>
+</section>
+<section id="exploratory-data-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis">Exploratory Data Analysis</h2>
 <p>The below code chunk will create some plots that explore the data</p>
 <p>The plots are listed below in order and what they will do</p>
 <ol type="1">
 <li>The first plot explores the ratio of physicians to the total population of the state</li>
 <li>The second plot explores the ratio of physicians assistants to the total population of the state</li>
 </ol>
-<div id="e833c612" class="cell" data-execution_count="6">
+<div id="4ec057ed" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
@@ -1243,13 +1260,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+</section>
+<section id="saving-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="saving-the-data">Saving the data</h2>
 <p>The next code chunk will save the two dataframes as a parquet file for easier storage and future access</p>
-<div id="f29dd85e" class="cell" data-execution_count="7">
+<div id="6fc2d97a" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>raw_pandas_dataframe.to_parquet(<span class="st">'Data/clean_data/large_2024_health_data.parquet'</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>smaller_health_pandas_dataframe.to_parquet(<span class="st">'Data/clean_data/small_2024_health_data.parquet'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
