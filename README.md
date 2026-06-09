@@ -11,7 +11,3 @@ Project Steps
 Data from: https://data.hrsa.gov/data/download#
 - specifically the area health resource files
 - note that the technical documentation comes with the data from the HRSA page
-
-
-TO-DO's Left
-- make a final plot
