@@ -1,5 +1,8 @@
 # atticus-tarleton-okemo-data
 
+Project Website: https://atticustarleton.github.io/atticus-tarleton-okemo-data/
+
+
 This is a project done to learn about qmd files, duckdb, sql. The learning will be done through an exploratory data analysis project on data I found interesting.
 
 Project Steps
