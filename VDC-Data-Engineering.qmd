@@ -1,0 +1,134 @@
+---
+title: Vermont Data Collaborative Data Engineering
+author: Atticus Tarleton
+date: today
+description: Data Engineering for the larger project of the Vermont Data Collaborative
+jupyter: python3
+execute:
+  eval: true
+format:
+  html: default
+  pdf: default
+---
+
+
+# Getting Started
+
+## Reading through vision and codebase_primer markdowns
+### codebase
+- backend is for data, website hosting, and run time logic
+    - data folder has lots of different raw data files, and the processed data files which are parquet files to be easily used with sql
+    - API brings info from data to frontend
+    - Query does a similar thing, but with the more complex runtime logic
+    - Build cleans the data, turns in into the parquet files, and then makes a permenant sql file
+    - Data_collection is how the data is collected, using web scrapers
+    - notebooks are the walkthrough for easier understanding of the backend
+    - app_utils: everything that needs to get cleaned up and reorganized
+- frontend is for the website
+    - most of it is handled by node.js and npm
+    - src is the typescript that makes the website
+        - app is the pages for the website
+        - components holds the "functions" that are needed for multiple pages
+        - lib are other projects that work in concert with the data stuff
+        - markdown: place to store markdowns. not really sure why it exists though
+        - utils, it is a way of turning some items into other items, which is useful for parts of the javascript
+- cascading filter
+    - the idea of a cascading filter makes sense to me
+    - it works by narrowing done the field of focus progressively so that its easy and simple to do
+    - for zoning, this works by first narrowing the county level, then the jurisdiction, then the district name, then finally the district type
+    - at any point, someone can stop filtering, but the cascading filter makes it easy to keep going
+
+
+
+
+# Getting Familiar
+- backend zoning tooltip
+    - GDF stands for geodataframe
+    - the function process_zoning_data first calls a function to clean the data
+        - it then calls a function that adds fill colors through a color map that is added to the geodataframe in a new column
+        - it then finally calls a function to create the tooltip
+    - the function to create a tooltip, called add_zoning_tooltip which then calls add_tooltip_from_dict
+        - this then creates a new column in the geodataframe for the tooltip
+        - this new column holds the plain text used to create a python dictionary, with each label in that dictionary holding the value of the corresponding column
+            - that is defined by the label_to_col dictionary passed in to the function
+    - the zoning specific parts of this are the unique data cleaning, and the unique label_to_col dictionary, everything else is generalizable
+    - how the tooltip is shown to the user (my guess)
+        - I looked at the front end code, and got really confused and could not figure it out
+        - so my guess is the tooltip is turned into a dictionary that allows for unique labels when hovering over different zoning districts
+        - this is because the tooltip does not include the geospatial coordinates, just facts about the zoning districts that would be useful to know when hovered over.
+- data engineering
+    - goals are to have clean and orderly code
+    - separation between collecting, cleaning, run-time query stuff, serving the data to the frontend
+    - make it easy to cross-reference datasets and filter them
+    - have the ability for llms to get involved in the future
+    - uses a filtering scheme in a schema.json file
+        - this works with a primary dataset and a secondary dataset that is being joined to the primary one
+        - there is a join key (what column is being joined on)
+        - there is a join type (what kind of join)
+        - and there is a list of ordered label-column pairs that create the cascading filter
+- tidy data article
+    - tidy datasets provide a standardized way of linking the structure and meaning of a dataset
+    - in tidy data:
+        - each variable forms a column
+        - each observation forms a row
+        - each kind of observable unit makes a table
+    - variables are generally easier to define functional relationships between, and easier to make comparisons between groups of observations
+    - for myself: tidy data often needs melting of the original dataset
+- the schema.json file
+    - it defines the joining and filtering for the filter tree on the primary dataset. for this file, the only primary dataset option currently is the default one
+        - for the filter tree, it then takes the 'source', whether the dataset it zoning_info or zoning_rules, and takes the info for columns stored in the json and returns it
+    - basically, the json file holds the join information for different datasets, as well as the columns for their cascading filters
+- how the filters work
+    - the information about them is stored in the json file, specifically in the columns section. the columns section is an ordered list of the cascading filters
+    - the difference between the primary dataset and secondary dataset keys does not really exist. the primary dataset key gets matched to the secondary dataset key to combine the two datasets
+    - for filtering the zoning and census query question
+        - the primary dataset would be the zoning dataset
+        - the secondary dataset would be the census dataset
+        - the join key would be the spatial coordinates
+        - the join type would be a spatial join
+        - i imagine the columns would be: county and town name for the census dataset
+- table_build qmd
+    -  basically just does all of the data cleaning and checking in a qmd notebook before moving the code to a build script
+- build script for zoning
+    - it creates functions to do basically every different step in the previous qmd notebook
+    - basically, it does the same thing as the qmd notebook, just in a way that can get run as part of the greater website
+    - the final names of the tables it produces are info, colors, geom, and rules
+        - these table names come from what they represent. info for the information about the zoning district, colors for the color mapping, geom for the geometric coordinates, and rules for the specific zoning rules of each zoning district
+- core functions script
+    - build_where_query_from_filters: my assumption is it takes the filters from the cascading filters and turns it into a sql query
+    - FilterSource is a basic class for cascading filter requests (connects backend to frontend)
+    - compile_cte: creates a sql string that selects each unique value of the join key, where each column being filtered in is in the filtered amount
+        - basically if we are filtering by addison county (municipal district), then select each distinct key where its column of municipal district is in the list of ['addison county']
+        - *this took me a long time to figure out
+    - compile_join: creates a sql string that does the right join
+    - compile_filters: creates two strings, each compiled into larger sql strings
+        - one being all the compile_cte for the filters coming in (i think only ever 2)
+        - the other one being the compile_join for each filter coming in
+    - sql_filter_block
+        - recreates the where block needed to do the compile_cte
+        - then reads a SQL file, using the format function to dictate specific sql code blocks get added where to the SQL file being read
+            - note: not to the literal file, but to the text copy of it being read at the moment
+        - and the updated text of the SQL file with compile_cte and join_cte slotted in to the right places specified for them in the original SQL file
+- zoning.py in query section
+    - the file reads in sql commands through the sql_filter_block function from the core_functions script
+    - the sql is also stored in the sql folder in the queries folder
+    - to reduce the code, the functions for geodata and zoning rules could probably be combined, with the new function having an input for whether or not it is geo data
+- zoning code in the API section
+    - 
+
+
+
+
+
+# Problems I have noticed
+- some of the react dependencies are out of date, and it said there were critical flaws
+    - did not take a screenshot
+- conda environment just could not recognize a lot of packages (i had to install uvicorn and fastapi in pip)
+    - some of that could be my computer, some of that could
+- there was no frontend.env.local file on github
+- node.js/nvm setup was hard. got it downloaded on my root of the terminal, and then it would not work in each directory until i specified it
+    - seems just the way this is
+    - trick is to download it in the root, then navigate to the specific directory and try to download again
+    - it automatically updated which directories node.js and nvm would work in, which was nice without downloading node.js a second time
+- read.me steps goes from 1 to 3
+- the zoning map currently does not work, and is throwing key errors and other problems
