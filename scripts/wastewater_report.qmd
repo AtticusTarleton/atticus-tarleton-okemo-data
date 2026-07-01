@@ -1,0 +1,232 @@
+---
+title: Wastewater Report
+author: Atticus Tarleton
+date: today
+description: Data Analysis and Report for Vermont Wastewater Data
+jupyter: python3
+execute:
+  eval: true
+format:
+  html: default
+  pdf: default
+---
+
+```{python}
+import pandas as pd
+import geopandas as gpd
+```
+
+The below code sets the project root to the right location, making file paths easier to manage
+```{python}
+import os
+from pathlib import Path
+
+_project_root = Path.cwd()
+while not (_project_root / ".git").exists():
+    _project_root = _project_root.parent
+    if _project_root == _project_root.parent:
+        raise RuntimeError(".git not found — are you inside the repo?")
+os.chdir(_project_root)
+print(os.getcwd())
+```
+
+Creating paths to the data
+```{python}
+data_path = Path("../react-vt-data/backend/Data/_Processed/wastewater")
+soil_path = data_path / "soil_suitability"
+treatment_path = data_path / "treatment_facilities"
+service_path = data_path / "service_areas"
+```
+
+## Soil Suitability analysis
+
+
+Reading in the data
+```{python}
+info_ACRPC = pd.read_parquet(soil_path/"info_ACRPC_Soil_Septic.parquet")
+info_BCRC = pd.read_parquet(soil_path/"info_BCRC_Soil_Septic.parquet")
+info_CCRPC = pd.read_parquet(soil_path/"info_CCRPC_Soil_Septic.parquet")
+info_CVRPC = pd.read_parquet(soil_path/"info_CVRPC_Soil_Septic.parquet")
+info_LCPC = pd.read_parquet(soil_path/"info_LCPC_Soil_Septic.parquet")
+info_MARC = pd.read_parquet(soil_path/"info_MARC_Soil_Septic.parquet")
+info_NWRPC = pd.read_parquet(soil_path/"info_NWRPC_Soil_Septic.parquet")
+
+geom_ACRPC = gpd.read_parquet(soil_path/"geom_ACRPC_Soil_Septic.parquet")
+geom_BCRC = gpd.read_parquet(soil_path/"geom_BCRC_Soil_Septic.parquet")
+geom_CCRPC = gpd.read_parquet(soil_path/"geom_CCRPC_Soil_Septic.parquet")
+geom_CVRPC = gpd.read_parquet(soil_path/"geom_CVRPC_Soil_Septic.parquet")
+geom_LCPC = gpd.read_parquet(soil_path/"geom_LCPC_Soil_Septic.parquet")
+geom_MARC = gpd.read_parquet(soil_path/"geom_MARC_Soil_Septic.parquet")
+geom_NWRPC = gpd.read_parquet(soil_path/"geom_NWRPC_Soil_Septic.parquet")
+```
+
+making a plot to see the geometry data
+```{python}
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(10, 10))
+
+geom_ACRPC.plot(ax=ax, color='lightgray')
+geom_BCRC.plot(ax=ax, color='blue')
+geom_CCRPC.plot(ax=ax, color='purple')
+geom_CVRPC.plot(ax=ax, color='green')
+geom_LCPC.plot(ax=ax, color='orange')
+geom_MARC.plot(ax=ax, color='yellow')
+geom_NWRPC.plot(ax=ax, color='red')
+
+plt.show()
+```
+What this plot shows is that we do not have all of the soil suitability data. We are missing some of Northeastern Vermont,
+Central Vermont, and a bit of Southeastern Vermont as well. While there is still a lot of data available, this merits
+future research to see if there is soil suitability data available for the regional planning commissions that we don't
+have data for.
+
+
+
+getting the amount of each soil suitability level for each regional planning commission
+```{python}
+import numpy as np
+
+
+info_soil_data = [info_ACRPC, info_CCRPC, info_CVRPC, info_LCPC, info_MARC, info_NWRPC, info_BCRC]
+whole_vermont_info = pd.concat(info_soil_data, ignore_index=True)
+info_soil_data.append(whole_vermont_info)
+info_soil_data_name = ["ACRPC", "CCRPC", "CVRPC", "LCPC", "MARC", "NWRPC", "BCRC", "Vermont"]
+
+for i in range(len(info_soil_data)):
+    # print(info_soil_data[i].sort_values(by='Suitability').groupby(['Suitability'])['Acres'].sum())
+    # print(np.sort(info_soil_data[i]['Suitability'].unique()))
+    plt.bar(height = info_soil_data[i].sort_values(by='Suitability').groupby(['Suitability'])['Acres'].sum(), x = np.sort(info_soil_data[i]['Suitability'].unique()))
+    plt.xticks(rotation = 45)
+    plt.title(f"Soil Suitability Distribution by Acres for {info_soil_data_name[i]}")
+    plt.xlabel("Soil Suitability Level")
+    plt.ylabel("Number of Acres")
+    plt.show()
+
+whole_vermont_info = pd.concat(info_soil_data, ignore_index=True)
+```
+
+## Wastewater Treatment Facilities
+
+Reading in the data
+```{python}
+treatment_geom = gpd.read_parquet(treatment_path/"treatment_facility_geom.parquet")
+treatment_info = pd.read_parquet(treatment_path/"treatment_facility_info.parquet")
+permit_info = pd.read_parquet(treatment_path/"treatment_facility_permit_info.parquet")
+miscellaneous_info = pd.read_parquet(treatment_path/"treatment_facility_miscellaneous_info.parquet")
+```
+Seeing whats in the data
+```{python}
+display(treatment_geom.head())
+display(treatment_info.head())
+display(permit_info.head())
+display(miscellaneous_info.head())
+```
+
+Getting summary statistics from the treatment_info table
+```{python}
+print(treatment_info.groupby(['RPC'])['SeptageReceivedAtThisFacility'].value_counts())
+```
+```{python}
+treatment_info['DesignHydraulicCapacityInMGD'] = pd.to_numeric(treatment_info['DesignHydraulicCapacityInMGD'], errors='coerce')
+print(f"the average DesignHydraulicCapacityInMGD: {treatment_info['DesignHydraulicCapacityInMGD'].mean()}")
+```
+
+
+Plotting the geometry data
+```{python}
+fig, ax = plt.subplots(figsize=(8, 6))
+
+treatment_geom.plot(ax=ax, color='red', markersize=20)
+plt.show()
+```
+
+Putting the two maps together, so you can see the boundaries of the Regional planning districts,
+and where their wastewater treatment facilities are
+```{python}
+fig, ax = plt.subplots(figsize=(10, 10))
+
+geom_ACRPC.plot(ax=ax, color='lightgray')
+geom_BCRC.plot(ax=ax, color='blue')
+geom_CCRPC.plot(ax=ax, color='purple')
+geom_CVRPC.plot(ax=ax, color='green')
+geom_LCPC.plot(ax=ax, color='orange')
+geom_MARC.plot(ax=ax, color='yellow')
+geom_NWRPC.plot(ax=ax, color='red')
+treatment_geom.plot(ax=ax, color='white', markersize=20, edgecolor='black')
+
+ax.set_xlabel("Latitude")
+ax.set_ylabel("Longitude")
+
+
+plt.show()
+```
+
+
+## Wastewater Service Areas
+
+reading in the data
+```{python}
+service_geom = gpd.read_parquet(service_path/"service_area_geom.parquet")
+service_info = pd.read_parquet(service_path/"service_area_info.parquet")
+service_miscellaneous_info = pd.read_parquet(service_path/"service_area_miscellaneous_info.parquet")
+```
+
+now to take a look at the datasets
+```{python}
+display(service_geom.head())
+display(service_info.head())
+display(service_miscellaneous_info.head())
+```
+
+now to make some graphs
+```{python}
+service_geom.plot(color = 'violet')
+plt.show()
+```
+What this plot shows is that there is not a lot of space overall in Vermont that is covered by wastewater service areas.
+Also, while the space covered by wastewater service areas is spread pretty evenly throughout Vermont, there is a lower
+density of service areas in Northeastern Vermont.
+
+```{python}
+fig, ax = plt.subplots(figsize=(12, 10))
+
+service_geom.plot(ax=ax, color='violet')
+treatment_geom.plot(ax=ax, color='white', markersize=1, edgecolor='white')
+ax.set_title("Plot of wastewater treatment facilities and wastewater service areas")
+ax.set_xlabel("Latitude")
+ax.set_ylabel("Longitude")
+
+plt.show()
+```
+What this plot shows is that the wastewater treatment service areas do line up with wastewater treatment facilities.
+That being said, the service areas don't line up perfectly with the treatment facilities, most notably in that there are
+a number of treatment facilities that don't seem to have an associated service area. This could be a gap in our service
+area data, or it could be that the treatment facilities include kinds of wastewater facilities that don't serve the general
+populus. This is an area that needs to be looked in to more, to see if there are data holes.
+
+
+```{python}
+fig, ax = plt.subplots(figsize=(12, 10))
+
+geom_ACRPC.plot(ax=ax, color='lightgray')
+geom_BCRC.plot(ax=ax, color='blue')
+geom_CCRPC.plot(ax=ax, color='purple')
+geom_CVRPC.plot(ax=ax, color='paleturquoise')
+geom_LCPC.plot(ax=ax, color='green')
+geom_MARC.plot(ax=ax, color='yellow')
+geom_NWRPC.plot(ax=ax, color='lightcyan')
+service_geom.plot(ax=ax, color='violet')
+treatment_geom.plot(ax=ax, color='white', markersize=10, edgecolor='black')
+
+ax.set_title("Plot of RPCs that we have data on, treatment facilities, and wastewater service areas")
+ax.set_xlabel("Latitude")
+ax.set_ylabel("Longitude")
+
+plt.show()
+```
+What this plot shows is how the wastewater treatment service areas and facilities line up with the septic tank soil
+suitability data that we have. And what this shows is a critical lack of data for septic tank soil suitability for
+Northeast Vermont. Northeast Vermont, as identified by earlier graphs, is one of the locations in Vermont with the lowest
+density of wastewater treatment service areas to its total land, and so the lack of information about suitability for
+septic tanks, which are an alternative to a public sewage systems which is represented by the wastewater treatment service
+areas.
