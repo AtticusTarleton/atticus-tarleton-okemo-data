@@ -104,6 +104,28 @@ for i in range(len(info_soil_data)):
 
 whole_vermont_info = pd.concat(info_soil_data, ignore_index=True)
 ```
+What these charts are going over is the number of acres of each level of soil suitability for septic tanks for each
+regional planning commission, as well as Vermont as a whole. There is an important caveat that the Vermont section is not
+all of Vermont, but rather all of the data we have, as there are a few regional planning commissions who's data we don't
+have.
+
+What these charts show is that there is a lot of variability between regions in terms of the distribution of soil suitability.
+By this I mean that some regional planning commissions have radically different soil suitabilities, with one example being
+that the NWRCP has 'not suited' as by far its largest soil suitability level, while for BCRC 'moderately suited' is its
+largest soil suitability level, with 'not suited' coming in a distant second.
+
+Looking a Vermont as a whole, either 'not suited' or 'moderately suited' is the largest soil suitability level for most
+regions, though CVRCP bucks that trend with 'marginally suited' being its most common soil suitability level. This frequency
+is shown on the Vermont total numbers, with 'not suited' being the most common soil suitability level, 'moderately suited'
+being the next most common, and 'marginally suited' being a close third. While the top 3 are all pretty close in terms of
+acres, the other two, 'not rated' and 'well suited', have a lot fewer acres. What this means for Vermont as a whole is a
+lot of its land is not really suited for septic tanks between all the acres that are 'not suited' or 'marginally suited'.
+After that a good amount of land is 'moderately suitable', indicating that septic tanks could be placed there, though
+conditions are not perfect for it. And lastly, there is a relatively small percentage of land that is 'well suited', and
+no regions have 'well suited' as their top two most common soil suitability levels, indicating that no region of Vermont
+is perfect for septic systems.
+
+
 
 ## Wastewater Treatment Facilities
 
@@ -139,6 +161,11 @@ fig, ax = plt.subplots(figsize=(8, 6))
 treatment_geom.plot(ax=ax, color='red', markersize=20)
 plt.show()
 ```
+What this plot shows is that there are a lot of wastewater treatment facilities, distributed relatively evenly throughout
+Vermont. However, while the distribution is spread pretty evenly throughout Vermont, there is a lower density of treatment
+facilities in Northeastern Vermont.
+
+
 
 Putting the two maps together, so you can see the boundaries of the Regional planning districts,
 and where their wastewater treatment facilities are
@@ -160,6 +187,10 @@ ax.set_ylabel("Longitude")
 
 plt.show()
 ```
+What this plot combines is the soil suitability data we do have with the the location of wastewater treatment facilities.
+This highlights the lack of wastewater treatment facilites in the Northeast and Central-East of Vermont as well as the
+lack of soil suitability data there as well. Any missing data for soil suitability is not idea, but it is only compounded
+by the likely lack of options other than septic tanks, which our soil suitability data provides insight about
 
 
 ## Wastewater Service Areas
