@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Atticus Tarleton">
-<meta name="dcterms.date" content="2026-06-08">
+<meta name="dcterms.date" content="2026-07-01">
 <meta name="description" content="Data Analysis and Final Report">
 
 <title>Report – Data Analysis Project on Health Care Profession Counts</title>
@@ -170,6 +170,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Report</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../scripts/VDC-Data-Engineering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Vermont Data Collaborative Data Engineering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../scripts/wastewater_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wastewater Report</span></a>
+  </div>
+</li>
       </ul>
   </li>
     </ul>
@@ -216,7 +228,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 8, 2026</p>
+      <p class="date">July 1, 2026</p>
     </div>
   </div>
   
@@ -229,7 +241,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>The below code sets the project root to the right location, making file paths easier to manage</p>
-<div id="3a930d93" class="cell" data-execution_count="1">
+<div id="46db1123" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -241,13 +253,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>os.chdir(_project_root)</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(os.getcwd())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>/Users/AGT/Desktop/ORCA/OkemoDataLearningProject</code></pre>
+<pre><code>/Users/AGT/Desktop/ORCA/atticus-tarleton-okemo-data</code></pre>
 </div>
 </div>
 <section id="creating-the-database-and-some-more-data-engineering" class="level2">
 <h2 class="anchored" data-anchor-id="creating-the-database-and-some-more-data-engineering">Creating the database and some more data engineering</h2>
 <p>The below code block is going to create a database connection to the large and small clean healthcare databases made in the engineering.qmd file</p>
-<div id="509fa747" class="cell" data-execution_count="2">
+<div id="10cc6d87" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> duckdb.<span class="ex">connect</span>()</span>
@@ -264,13 +276,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="ss">  SELECT * FROM read_parquet('</span><span class="sc">{</span><span class="st">"Data/clean_data/small_2024_health_data.parquet"</span><span class="sc">}</span><span class="ss">')</span></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ss">  WHERE st_abbrev = 'VT' OR st_abbrev = 'US'</span></span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ss">"""</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="56">
-<pre><code>&lt;_duckdb.DuckDBPyConnection at 0x107ed3230&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>&lt;_duckdb.DuckDBPyConnection at 0x1054a27f0&gt;</code></pre>
 </div>
 </div>
 <p>Questions to answer 1) How does Vermont’s ratios of health care professions look compared to the US as a whole - graph 1: Bar plot of ratio of vermont next to US ratio - will need to do some pivoting of data and such - graph 2: do the same as above, but instead by summing the northeast region - how does vermont compare to the local region - questions: - include vermont or not? - take the ratios of each state and average them, or sum the states values and average them? 2) States with the most physicians, and their total population - basically, do the numbers align - and do the same with the least physicians 3) States with the greatest ratio of physicians, and with the smallest ratio</p>
 <p>This code chunk below sets up the datasets that will be plotted and used in the future</p>
-<div id="0b6ef901" class="cell" data-execution_count="3">
+<div id="db866b1b" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>small_health_df <span class="op">=</span> pd.read_parquet(<span class="st">'Data/clean_data/small_2024_health_data.parquet'</span>)</span>
@@ -380,7 +392,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="exploratory-data-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="exploratory-data-analysis">Exploratory Data Analysis</h2>
 <p>The code chunk below answers the question of which states have the most physicians, and which ones have the least using Pandas</p>
-<div id="efb86b31" class="cell" data-execution_count="4">
+<div id="f5d89a51" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>physician_sorted_df <span class="op">=</span> small_health_df.drop(<span class="dv">51</span>).sort_values(by<span class="op">=</span><span class="st">'phys_wkforc_23'</span>, ascending<span class="op">=</span><span class="va">False</span>)[[<span class="st">'st_abbrev'</span>, <span class="st">'phys_wkforc_23'</span>, <span class="st">'popn_pums_23'</span>]]</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st"> the 10 states with the most physicians"</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>display(physician_sorted_df.head(<span class="dv">10</span>))</span>
@@ -554,7 +566,7 @@ the 10 states with the fewest physicians</code></pre>
 </div>
 </div>
 <p>The code chunk below answers the of which states have the most physicians, and which ones have the least using SQL</p>
-<div id="bfbd6f87" class="cell" data-execution_count="5">
+<div id="4dd5231f" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st"> the 10 states with the most physicians"</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>display(con.execute(<span class="st">"""SELECT st_abbrev, phys_wkforc_23, popn_pums_23</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM small_healthcare WHERE st_abbrev != 'US'</span></span>
@@ -732,9 +744,9 @@ the 10 states with the fewest physicians</code></pre>
 </div>
 </div>
 <p>The code chunk below answers the question of what states have the largest and smallest ratio of health care professionals using Pandas</p>
-<div id="f67a2faa" class="cell" data-execution_count="6">
+<div id="4a9490ac" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>small_ratio_df.sort_values(by<span class="op">=</span><span class="st">'phys_wkforc_23'</span>, ascending<span class="op">=</span><span class="va">False</span>)[[<span class="st">'st_abbrev'</span>, <span class="st">'phys_wkforc_23'</span>, <span class="st">'popn_pums_23'</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="60">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
@@ -1067,7 +1079,7 @@ the 10 states with the fewest physicians</code></pre>
 </div>
 </div>
 <p>The code chunk below answers the question of what states have the largest and smallest ratio of health care professionals using SQL</p>
-<div id="85f00b17" class="cell" data-execution_count="7">
+<div id="4c8a6cc0" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">"ALTER TABLE small_healthcare ADD phys_wkforc_ratio_23 FLOAT"</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">"UPDATE small_healthcare SET phys_wkforc_ratio_23 = phys_wkforc_23/popn_pums_23"</span>)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>display(con.execute(<span class="st">"SELECT st_abbrev, phys_wkforc_ratio_23, popn_pums_23 FROM small_healthcare ORDER BY phys_wkforc_ratio_23 DESC"</span>).df())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1409,7 +1421,7 @@ the 10 states with the fewest physicians</code></pre>
 <p>The goal of this section is to now dive into how Vermont compares to the United States, as well as other states like Vermont</p>
 <p>The code chunk below does the plotting for the first plot</p>
 <p>What this plot is supposed to show is the ratio of different workers in different health care professions in Vermont compared to the US as a whole. This will be helpful in understanding how Vermont’s healthcare system compares to the US.</p>
-<div id="7fc7297f" class="cell" data-execution_count="8">
+<div id="ad794bed" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1428,7 +1440,7 @@ the 10 states with the fewest physicians</code></pre>
 </div>
 <p>Looking at the plot now, we see that Vermont has more physicians than the US on average, and tends to have a slightly higher ratio of health professionals in general. While there are a number of professions where there is no blue bar, this is because there was no data collected for those professions, rather than there being basically no one practicing them. Besides the fact that the professions with no data in Vermont are generally the least numerous professions, I know that at least some of the lack of data is because it is not collected not that there is no one practicing those professions, as one bar with no data is ot_23, standing for occupational therapist and I know there are occupational therapists currently practicing in Vermont.</p>
 <p>The code chunk below does the plotting for the second plot</p>
-<div id="3acc1d85" class="cell" data-execution_count="9">
+<div id="1976fc52" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">5</span>))</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">90</span>)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>sns.barplot(data<span class="op">=</span>vt_and_ne_ratio_melted, x<span class="op">=</span><span class="st">'occupation'</span>, y<span class="op">=</span><span class="st">'ratio'</span>, hue<span class="op">=</span><span class="st">'st_abbrev'</span>)</span>
