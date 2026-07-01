@@ -222,7 +222,7 @@ density of service areas in Northeastern Vermont.
 fig, ax = plt.subplots(figsize=(12, 10))
 
 service_geom.plot(ax=ax, color='violet')
-treatment_geom.plot(ax=ax, color='white', markersize=2, edgecolor='black')
+treatment_geom.plot(ax=ax, color='white', markersize=9, edgecolor='black')
 ax.set_title("Plot of wastewater treatment facilities and wastewater service areas")
 ax.set_xlabel("Latitude")
 ax.set_ylabel("Longitude")
