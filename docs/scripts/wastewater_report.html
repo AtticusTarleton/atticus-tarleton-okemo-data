@@ -239,12 +239,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="0378db34" class="cell" data-execution_count="1">
+<div id="8ad0a1af" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geopandas <span class="im">as</span> gpd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The below code sets the project root to the right location, making file paths easier to manage</p>
-<div id="9149bde0" class="cell" data-execution_count="2">
+<div id="c130169e" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -260,7 +260,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Creating paths to the data</p>
-<div id="3dfa7d8f" class="cell" data-execution_count="3">
+<div id="e3b3cb64" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>data_path <span class="op">=</span> Path(<span class="st">"../react-vt-data/backend/Data/_Processed/wastewater"</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>soil_path <span class="op">=</span> data_path <span class="op">/</span> <span class="st">"soil_suitability"</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>treatment_path <span class="op">=</span> data_path <span class="op">/</span> <span class="st">"treatment_facilities"</span></span>
@@ -269,7 +269,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="soil-suitability-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="soil-suitability-analysis">Soil Suitability analysis</h2>
 <p>Reading in the data</p>
-<div id="4b5b3f75" class="cell" data-execution_count="4">
+<div id="5b0ae61d" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>info_ACRPC <span class="op">=</span> pd.read_parquet(soil_path<span class="op">/</span><span class="st">"info_ACRPC_Soil_Septic.parquet"</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>info_BCRC <span class="op">=</span> pd.read_parquet(soil_path<span class="op">/</span><span class="st">"info_BCRC_Soil_Septic.parquet"</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>info_CCRPC <span class="op">=</span> pd.read_parquet(soil_path<span class="op">/</span><span class="st">"info_CCRPC_Soil_Septic.parquet"</span>)</span>
@@ -287,7 +287,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>geom_NWRPC <span class="op">=</span> gpd.read_parquet(soil_path<span class="op">/</span><span class="st">"geom_NWRPC_Soil_Septic.parquet"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>making a plot to see the geometry data</p>
-<div id="87cef451" class="cell" data-execution_count="5">
+<div id="6d58207c" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">10</span>))</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -310,7 +310,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>What this plot shows is that we do not have all of the soil suitability data. We are missing some of Northeastern Vermont, Central Vermont, and a bit of Southeastern Vermont as well. While there is still a lot of data available, this merits future research to see if there is soil suitability data available for the regional planning commissions that we don’t have data for.</p>
 <p>getting the amount of each soil suitability level for each regional planning commission</p>
-<div id="3153e98c" class="cell" data-execution_count="6">
+<div id="cc92d5e9" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -394,14 +394,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="wastewater-treatment-facilities" class="level2">
 <h2 class="anchored" data-anchor-id="wastewater-treatment-facilities">Wastewater Treatment Facilities</h2>
 <p>Reading in the data</p>
-<div id="0f961159" class="cell" data-execution_count="7">
+<div id="e3cb6e8e" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>treatment_geom <span class="op">=</span> gpd.read_parquet(treatment_path<span class="op">/</span><span class="st">"treatment_facility_geom.parquet"</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>treatment_info <span class="op">=</span> pd.read_parquet(treatment_path<span class="op">/</span><span class="st">"treatment_facility_info.parquet"</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>permit_info <span class="op">=</span> pd.read_parquet(treatment_path<span class="op">/</span><span class="st">"treatment_facility_permit_info.parquet"</span>)</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>miscellaneous_info <span class="op">=</span> pd.read_parquet(treatment_path<span class="op">/</span><span class="st">"treatment_facility_miscellaneous_info.parquet"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Seeing whats in the data</p>
-<div id="7aa41938" class="cell" data-execution_count="8">
+<div id="babbf299" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>display(treatment_geom.head())</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>display(treatment_info.head())</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>display(permit_info.head())</span>
@@ -670,7 +670,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Getting summary statistics from the treatment_info table</p>
-<div id="67065838" class="cell" data-execution_count="9">
+<div id="ee07b9e0" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(treatment_info.groupby([<span class="st">'RPC'</span>])[<span class="st">'SeptageReceivedAtThisFacility'</span>].value_counts())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>RPC    SeptageReceivedAtThisFacility
@@ -699,7 +699,7 @@ WRC    N                                18
 Name: count, dtype: int64</code></pre>
 </div>
 </div>
-<div id="834d6e94" class="cell" data-execution_count="10">
+<div id="5346bd9c" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>treatment_info[<span class="st">'DesignHydraulicCapacityInMGD'</span>] <span class="op">=</span> pd.to_numeric(treatment_info[<span class="st">'DesignHydraulicCapacityInMGD'</span>], errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"the average DesignHydraulicCapacityInMGD: </span><span class="sc">{</span>treatment_info[<span class="st">'DesignHydraulicCapacityInMGD'</span>]<span class="sc">.</span>mean()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -707,7 +707,7 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 <p>Plotting the geometry data</p>
-<div id="af6f0a04" class="cell" data-execution_count="11">
+<div id="27524b0d" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>treatment_geom.plot(ax<span class="op">=</span>ax, color<span class="op">=</span><span class="st">'red'</span>, markersize<span class="op">=</span><span class="dv">20</span>)</span>
@@ -722,7 +722,7 @@ Name: count, dtype: int64</code></pre>
 </div>
 <p>What this plot shows is that there are a lot of wastewater treatment facilities, distributed relatively evenly throughout Vermont. However, while the distribution is spread pretty evenly throughout Vermont, there is a lower density of treatment facilities in Northeastern Vermont.</p>
 <p>Putting the two maps together, so you can see the boundaries of the Regional planning districts, and where their wastewater treatment facilities are</p>
-<div id="b7ceb911" class="cell" data-execution_count="12">
+<div id="00e8f002" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">10</span>))</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>geom_ACRPC.plot(ax<span class="op">=</span>ax, color<span class="op">=</span><span class="st">'lightgray'</span>)</span>
@@ -752,13 +752,13 @@ Name: count, dtype: int64</code></pre>
 <section id="wastewater-service-areas" class="level2">
 <h2 class="anchored" data-anchor-id="wastewater-service-areas">Wastewater Service Areas</h2>
 <p>reading in the data</p>
-<div id="c7381a2e" class="cell" data-execution_count="13">
+<div id="6368fd5d" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>service_geom <span class="op">=</span> gpd.read_parquet(service_path<span class="op">/</span><span class="st">"service_area_geom.parquet"</span>)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>service_info <span class="op">=</span> pd.read_parquet(service_path<span class="op">/</span><span class="st">"service_area_info.parquet"</span>)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>service_miscellaneous_info <span class="op">=</span> pd.read_parquet(service_path<span class="op">/</span><span class="st">"service_area_miscellaneous_info.parquet"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>now to take a look at the datasets</p>
-<div id="29ea2a71" class="cell" data-execution_count="14">
+<div id="807a5c80" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>display(service_geom.head())</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>display(service_info.head())</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>display(service_miscellaneous_info.head())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -965,7 +965,7 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 <p>now to make some graphs</p>
-<div id="895c0ae2" class="cell" data-execution_count="15">
+<div id="f180662b" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>service_geom.plot(color <span class="op">=</span> <span class="st">'violet'</span>)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
@@ -977,11 +977,11 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 <p>What this plot shows is that there is not a lot of space overall in Vermont that is covered by wastewater service areas. Also, while the space covered by wastewater service areas is spread pretty evenly throughout Vermont, there is a lower density of service areas in Northeastern Vermont.</p>
-<div id="30c16add" class="cell" data-execution_count="16">
+<div id="85cc3dea" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">10</span>))</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>service_geom.plot(ax<span class="op">=</span>ax, color<span class="op">=</span><span class="st">'violet'</span>)</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>treatment_geom.plot(ax<span class="op">=</span>ax, color<span class="op">=</span><span class="st">'white'</span>, markersize<span class="op">=</span><span class="dv">1</span>, edgecolor<span class="op">=</span><span class="st">'white'</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>treatment_geom.plot(ax<span class="op">=</span>ax, color<span class="op">=</span><span class="st">'white'</span>, markersize<span class="op">=</span><span class="dv">2</span>, edgecolor<span class="op">=</span><span class="st">'black'</span>)</span>
 <span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Plot of wastewater treatment facilities and wastewater service areas"</span>)</span>
 <span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Latitude"</span>)</span>
 <span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Longitude"</span>)</span>
@@ -996,7 +996,7 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 <p>What this plot shows is that the wastewater treatment service areas do line up with wastewater treatment facilities. That being said, the service areas don’t line up perfectly with the treatment facilities, most notably in that there are a number of treatment facilities that don’t seem to have an associated service area. This could be a gap in our service area data, or it could be that the treatment facilities include kinds of wastewater facilities that don’t serve the general populus. This is an area that needs to be looked in to more, to see if there are data holes.</p>
-<div id="a7bafd87" class="cell" data-execution_count="17">
+<div id="414695dc" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">10</span>))</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>geom_ACRPC.plot(ax<span class="op">=</span>ax, color<span class="op">=</span><span class="st">'lightgray'</span>)</span>
